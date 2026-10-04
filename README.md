@@ -53,8 +53,7 @@ Details and limits of each part: [Detailed status](#detailed-status).
 <img src="docs/screenshots/phone-camera-torch.jpg" width="300" alt="The Mi Max 2 camera app showing a live preview, with the rear LED torch on">
 </p>
 
-Left: the Mi Max 2 running Nura. Right: the working rear camera in the camera app (Snapshot),
-with the LED torch switched on.
+Left: the Xiaomi Mi Max 2 running Nura. Right: the working rear camera in the camera app (Snapshot), with the LED torch switched on.
 
 <p>
 <img src="docs/screenshots/sim-sms-torch.png" width="300" alt="Phosh quick settings: the SIM is registered on the mobile network, the Torch toggle, and two received SMS (texts hidden)">
@@ -549,6 +548,13 @@ What this work was built on and checked against:
 Register values for the two sensors were read from Xiaomi's camera libraries on
 the phone (`libmmcamera_oxygen_*.so`) as data. No vendor binaries, chromatix
 files or firmware are included in this repository.
+
+## Find me
+
+- Website: [tuxhouse.eu](https://tuxhouse.eu)
+- GitHub: [@sv1sjp](https://github.com/sv1sjp)
+- YouTube: [@TuxHouseEU](https://www.youtube.com/@TuxHouseEU)
+- Mi Max 2 Telegram group: [t.me/MiMax_2](https://t.me/MiMax_2)
 
 ## License
 
