@@ -1,0 +1,114 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.661s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.347s
+loglevel=7
+== ADSP
+adsp: running fw: wcnss.mdt
+[   84.461002] remoteproc remoteproc2: Booting fw image wcnss.mdt, size 7324
+[   84.823319] remoteproc remoteproc1: remote processor adsp is now up
+[   93.659971] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+== amp driver + card
+card after 1s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route + low gain
+MM3 routes before:
+total 188
+drwxr-sr-x    3 root     root          4096 Sep 29 12:22 .
+drwxr-xr-x   28 root     root          4096 Sep 28 21:06 ..
+route on
+gain 3 dB
+== DAPM state
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@7:dais/dapm/MultiMedia3 Playback
+MultiMedia3 Playback: Off  in 0 out 0
+ stream MultiMedia3 Playback inactive
+ widget-type dai_in
+ out  "static" "MM_DL3" "c200000.remoteproc:smd-edge:apr:service@7:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@7:dais/dapm/MM_DL3
+MM_DL3: Off  in 0 out 0
+ stream MultiMedia3 Playback inactive
+ widget-type aif_in
+ in  "static" "MultiMedia3 Playback" "c200000.remoteproc:smd-edge:apr:service@7:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@8:routing/dapm/QUIN_MI2S_RX Audio Mixer
+QUIN_MI2S_RX Audio Mixer: Off  in 0 out 1
+ widget-type mixer
+ out  "static" "QUIN_MI2S_RX" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@4:dais/dapm/QUIN_MI2S_RX
+QUIN_MI2S_RX: Off  in 0 out 1
+ widget-type aif_in
+ out  "static" "Quinary MI2S Playback" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+ in  "static" "QUIN_MI2S_RX Voice Mixer" "c200000.remoteproc:smd-edge:apr:service@9:dais"
+ in  "static" "QUIN_MI2S_RX Audio Mixer" "c200000.remoteproc:smd-edge:apr:service@8:routing"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@4:dais/dapm/Quinary MI2S Playback
+Quinary MI2S Playback: Off  in 0 out 1
+ stream Quinary MI2S Playback inactive
+ widget-type dai_in
+ out  "static" "Speaker ASI1 Playback" "tas2560.0-004c"
+ in  "static" "QUIN_MI2S_RX" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ASI1 Playback
+Speaker ASI1 Playback: Off  in 0 out 1
+ stream ASI1 Playback inactive
+ widget-type dai_in
+ out  "static" "Speaker ASI1" "tas2560.0-004c"
+ in  "static" "Quinary MI2S Playback" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ASI1
+Speaker ASI1: Off  in 0 out 1
+ stream ASI1 Playback inactive
+ widget-type aif_in
+ out  "static" "Speaker ClassD" "tas2560.0-004c"
+ in  "static" "Speaker ASI1 Playback" "tas2560.0-004c"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ClassD
+Speaker ClassD: Off  in 0 out 1
+ widget-type out_drv
+ out  "static" "Speaker OUT" "tas2560.0-004c"
+ in  "static" "Speaker ASI1" "tas2560.0-004c"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker OUT
+Speaker OUT: Off  in 0 out 1
+ widget-type output
+ in  "static" "Speaker ClassD" "tas2560.0-004c"
+== play beeps-1 on Quinary (hw:0,2), retries
+aplay try 1: aplay: main:850: audio open error: Invalid argument
+aplay try 2: aplay: main:850: audio open error: Invalid argument
+aplay try 3: aplay: main:850: audio open error: Invalid argument
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+aplay:
+aplay: main:850: audio open error: Invalid argument
+aplay: main:850: audio open error: Invalid argument
+== dmesg
+[  125.265455] remoteproc remoteproc2: recovering a204000.remoteproc
+[  130.545466] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  131.280797] remoteproc remoteproc2: stopped remote processor a204000.remoteproc
+[  132.147716] remoteproc remoteproc2: remote processor a204000.remoteproc is now up
+[  132.265427] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  132.266004] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  132.266059] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+[  138.603514] tas2560: loading out-of-tree module taints kernel.
+[  138.632014] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  138.655314] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  138.655890] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  138.656015] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  138.656674] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  138.656774] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  138.656825] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  138.656892] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  138.656946] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  138.657656] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  138.657920] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  141.490125]  MultiMedia3: ASoC: no backend DAIs enabled for MultiMedia3, possibly missing ALSA mixer-based routing or UCM profile
+[  172.060717] qcom-wcnss-pil a204000.remoteproc: fatal error received: dog.c:1569:Watchdog startup timeout
+[  172.061006] remoteproc remoteproc2: crash detected in a204000.remoteproc: type fatal error
+[  172.061384] remoteproc remoteproc2: handling crash #2 in a204000.remoteproc
+[  172.061419] remoteproc remoteproc2: recovering a204000.remoteproc
+[  177.388450] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  177.429683] remoteproc remoteproc2: stopped remote processor a204000.remoteproc
+[  178.132848] remoteproc remoteproc2: remote processor a204000.remoteproc is now up
+[  178.246938] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  178.247559] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  178.247590] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+== ADSP still alive?
+running
+mixer ok (DSP responsive)
+=== RESTORE
+ssh: connect to host 172.16.42.1 port 22: No route to host
+!!! NOT BACK IN NORMAL OS - reboot again
+EXIT 0

@@ -1,0 +1,91 @@
+media: qcom: camss: msm8953: never use the 100 MHz CSIPHY timer rate
+
+With the IMX386 binned modes (172 MHz link), CAMSS picks the lowest CSIPHY timer
+rate that fits, 100 MHz. On MSM8953 that clock source never starts
+("csi0phytimer_clk status stuck at 'off'") and streaming fails. MSM8953 gets its
+own CSIPHY resource table that only allows 200/266.67 MHz, like downstream,
+which always uses 200 MHz.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/media/platform/qcom/camss/camss.c	2026-09-29 20:45:58.037937970 +0300
++++ b/drivers/media/platform/qcom/camss/camss.c	2026-09-29 20:45:58.038725576 +0300
+@@ -515,6 +515,64 @@
+ 	}
+ };
+ 
++/*
++ * MSM8953: the CSIPHY timer RCG does not run from the 100 MHz GPLL0/2 source
++ * ("csi0phytimer_clk status stuck at 'off'"), so never select it; downstream
++ * always uses 200 MHz.
++ */
++static const struct camss_subdev_resources csiphy_res_8x53[] = {
++	/* CSIPHY0 */
++	{
++		.regulators = {},
++		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy0_timer" },
++		.clock_rate = { { 0 },
++				{ 0 },
++				{ 0 },
++				{ 200000000, 266666667 } },
++		.reg = { "csiphy0", "csiphy0_clk_mux" },
++		.interrupt = { "csiphy0" },
++		.csiphy = {
++			.id = 0,
++			.hw_ops = &csiphy_ops_3ph_1_0,
++			.formats = &csiphy_formats_8x96
++		}
++	},
++
++	/* CSIPHY1 */
++	{
++		.regulators = {},
++		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy1_timer" },
++		.clock_rate = { { 0 },
++				{ 0 },
++				{ 0 },
++				{ 200000000, 266666667 } },
++		.reg = { "csiphy1", "csiphy1_clk_mux" },
++		.interrupt = { "csiphy1" },
++		.csiphy = {
++			.id = 1,
++			.hw_ops = &csiphy_ops_3ph_1_0,
++			.formats = &csiphy_formats_8x96
++		}
++	},
++
++	/* CSIPHY2 */
++	{
++		.regulators = {},
++		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy2_timer" },
++		.clock_rate = { { 0 },
++				{ 0 },
++				{ 0 },
++				{ 200000000, 266666667 } },
++		.reg = { "csiphy2", "csiphy2_clk_mux" },
++		.interrupt = { "csiphy2" },
++		.csiphy = {
++			.id = 2,
++			.hw_ops = &csiphy_ops_3ph_1_0,
++			.formats = &csiphy_formats_8x96
++		}
++	}
++};
++
+ static const struct camss_subdev_resources csid_res_8x96[] = {
+ 	/* CSID0 */
+ 	{
+@@ -5115,11 +5173,11 @@
+ 	.version = CAMSS_8x53,
+ 	.icc_res = icc_res_8x53,
+ 	.icc_path_num = ARRAY_SIZE(icc_res_8x53),
+-	.csiphy_res = csiphy_res_8x96,
++	.csiphy_res = csiphy_res_8x53,
+ 	.csid_res = csid_res_8x53,
+ 	.ispif_res = &ispif_res_8x53,
+ 	.vfe_res = vfe_res_8x53,
+-	.csiphy_num = ARRAY_SIZE(csiphy_res_8x96),
++	.csiphy_num = ARRAY_SIZE(csiphy_res_8x53),
+ 	.csid_num = ARRAY_SIZE(csid_res_8x53),
+ 	.vfe_num = ARRAY_SIZE(vfe_res_8x53),
+ };

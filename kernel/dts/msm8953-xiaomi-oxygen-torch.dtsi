@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Mi Max 2 (oxygen) rear dual-tone LED: PMI8950 legacy flash block (SPMI usid 3,
+ * 0xd300, type 0x18 / subtype 0x01). Continuous torch only, via
+ * leds-qcom-pmi8950-torch by Kostiantyn Andriiuk (postmarketos-xiaomi-vince).
+ * Stock Android allows 100 mA per channel in torch mode; the driver caps it at 50 mA.
+ * Include from msm8953-xiaomi-oxygen-camera.dts (or any oxygen DTS).
+ */
+&spmi_bus {
+	pmic@3 {
+		pmi8950_flash_led: led-controller@d300 {
+			compatible = "qcom,pmi8950-flash-led";
+			reg = <0xd300>;
+			qcom,torch-max-microamp = <50000>;
+			/* Phosh's torch toggle looks for "*:flash" */
+			label = "white:flash";
+		};
+	};
+};

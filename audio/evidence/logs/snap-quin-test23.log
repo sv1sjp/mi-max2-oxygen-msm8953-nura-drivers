@@ -1,0 +1,19 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.495s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.169s
+loglevel=7
+== ADSP: running fw: xiaomi-vince-adsp/adsp.mdt
+card after 2s
+route on (DAPM connected)
+snap quin-idle: 81920 bytes
+snap quin-play: 81920 bytes
+[  161.300323] padsample quin: gpio91 cfg=0x0c4 func=1 ones=100133/200000 edges=147152 ACTIVE
+aplay: TICK_TIME: 0
+[  162.278296] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  165.350144] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  165.350276] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX
+[  165.350311] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2507 phrog
+EXIT 0

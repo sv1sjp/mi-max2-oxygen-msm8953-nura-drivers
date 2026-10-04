@@ -1,0 +1,47 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.501s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.205s
+loglevel=7
+== ADSP: running fw: adsp.mdt
+card after 2s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+gain 3 dB
+[  216.370303] lpassmux before: 0x0c051000 = 0x00200002
+[  216.370976] lpassmux before: 0x0c051004 = 0x00030000
+[  216.370998] lpassmux before: 0x0c052000 = 0x00000000
+[  216.371093] lpassmux before: 0x0c055000 = 0x00000000
+idle ACTIVE pads: 0
+== Primary playback (hw:0,0), sampling pads
+route on (DAPM connected)
+[  219.628067] padsample pri: gpio88 cfg=0x005 func=1 ones=0/200000 edges=0 idle
+[  219.628193] padsample pri: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  219.628200] padsample pri: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  219.628208] padsample pri: gpio91 cfg=0x005 func=1 ones=0/200000 edges=0 idle
+[  219.628215] padsample pri: gpio92 cfg=0x0c5 func=1 ones=100029/200000 edges=56160 ACTIVE
+[  219.628223] padsample pri: gpio93 cfg=0x005 func=1 ones=0/200000 edges=0 idle
+[  219.628231] padsample pri: gpio94 cfg=0x009 func=2 ones=0/200000 edges=0 idle
+[  219.628238] padsample pri: gpio95 cfg=0x009 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-1.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  224.706951] lpassmux before: 0x0c051000 = 0x00200002
+[  224.707093] lpassmux before: 0x0c051004 = 0x00030000
+[  224.707109] lpassmux before: 0x0c052000 = 0x00000000
+[  224.707152] lpassmux before: 0x0c055000 = 0x00000000
+== dmesg
+[    1.904138] l2: Bringing 0uV into 1100000-1100000uV
+[  204.532762] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  204.773153] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  204.774853] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  204.784485] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  204.789864] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  204.801095] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  204.806898] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  204.816728] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  204.822756] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  204.888494] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  204.905488] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+== ADSP: running
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2597 phrog
+EXIT 0

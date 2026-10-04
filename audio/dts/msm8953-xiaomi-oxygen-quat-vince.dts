@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* TEST: Quaternary speaker DT with the vince ADSP firmware (for LPASS-CC snapshots). */
+#include "msm8953-xiaomi-oxygen-quat.dts"
+
+&lpass {
+	firmware-name = "xiaomi-vince-adsp/adsp.mdt";
+};

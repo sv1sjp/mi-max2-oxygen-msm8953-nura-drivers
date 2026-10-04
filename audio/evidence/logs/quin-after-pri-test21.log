@@ -1,0 +1,99 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.440s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.127s
+loglevel=7
+== ADSP
+adsp: running fw: xiaomi-vince-adsp/adsp.mdt
+[   95.631181] remoteproc remoteproc2: Booting fw image xiaomi-vince-adsp/adsp.mdt, size 7452
+[   96.191114] remoteproc remoteproc2: remote processor adsp is now up
+[  103.055362] remoteproc remoteproc1: Booting fw image mba.mbn, size 238464
+== amp driver + card
+card after 2s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route + low gain
+MM3 routes before:
+route on (DAPM connected)
+gain 3 dB
+== idle pads
+[  166.313892] padsample idle: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  166.314006] padsample idle: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  166.314015] padsample idle: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  166.314022] padsample idle: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  166.314029] padsample idle: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  166.314037] padsample idle: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  166.314043] padsample idle: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  166.314051] padsample idle: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+== start a PRIMARY stream first (internal codec headphone path, silence) to get WS on gpio92
+  set RX1 MIX1 INP1
+  set RX2 MIX1 INP1
+  set RDAC2 MUX
+  set HPHL
+  set HPHR
+pri aplay: Playing raw data '/dev/zero' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+== Quinary START (MM3 -> QUIN_MI2S_RX), sampling pads during it
+route on (DAPM connected)
+[  171.436580] padsample start+0.4s: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.436732] padsample start+0.4s: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  171.436742] padsample start+0.4s: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  171.436749] padsample start+0.4s: gpio91 cfg=0x0c4 func=1 ones=100137/200000 edges=149353 ACTIVE
+[  171.436757] padsample start+0.4s: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.436764] padsample start+0.4s: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.436771] padsample start+0.4s: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  171.436778] padsample start+0.4s: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+[  173.792847] padsample start+2s: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  173.792992] padsample start+2s: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  173.793003] padsample start+2s: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  173.793010] padsample start+2s: gpio91 cfg=0x0c4 func=1 ones=100326/200000 edges=149319 ACTIVE
+[  173.793017] padsample start+2s: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  173.793024] padsample start+2s: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  173.793031] padsample start+2s: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  173.793039] padsample start+2s: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+pri aplay after: Playing raw data '/dev/zero' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+== full pad scan (TLMM pads 4..134, reserved ones skipped) while the interface is stuck
+[  176.653308] padsample scan: gpio69 cfg=0x0c5 func=1 ones=45534/100000 edges=51182 ACTIVE
+[  176.653317] padsample scan: gpio70 cfg=0x0c9 func=2 ones=49644/100000 edges=69285 ACTIVE
+[  176.653332] padsample scan: gpio72 cfg=0x0c9 func=2 ones=41070/100000 edges=48504 ACTIVE
+[  176.653339] padsample scan: gpio73 cfg=0x0c5 func=1 ones=41044/100000 edges=48490 ACTIVE
+[  177.288814] padsample scan: gpio91 cfg=0x0c4 func=1 ones=50051/100000 edges=74019 ACTIVE
+(scan done: 136 pads sampled)
+aplay: TICK_TIME: 0
+== dmesg
+[  153.001379] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  153.001428] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  153.001473] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  153.001523] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  153.001574] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  153.002226] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  153.003078] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  173.798733] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  173.798795] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f
+[  173.798810] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  176.870571] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  176.870730] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX
+[  176.870751] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110
+[  181.443193] qcom-wcnss-pil a204000.remoteproc: fatal error received: dog.c:1569:Watchdog startup timeout
+[  181.443400] remoteproc remoteproc0: crash detected in a204000.remoteproc: type fatal error
+[  181.444394] remoteproc remoteproc0: handling crash #2 in a204000.remoteproc
+[  181.444446] remoteproc remoteproc0: recovering a204000.remoteproc
+[  186.601729] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  186.635610] remoteproc remoteproc0: stopped remote processor a204000.remoteproc
+[  187.349135] remoteproc remoteproc0: remote processor a204000.remoteproc is now up
+[  187.474547] qcom_wcnss_ctrl remoteproc0:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  187.475138] qcom_wcnss_ctrl remoteproc0:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  187.475178] qcom_wcnss_ctrl remoteproc0:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+[  211.175000] qcom-q6afe aprsvc:service:4:4: AFE close failed -110
+[  211.175149] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to close AFE port (-110)
+[  214.246747] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  214.246878] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on PRI_MI2S_RX
+[  214.246914] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110
+[  215.271226] qcom-q6adm aprsvc:service:4:8: ADM copp cmd timedout
+[  215.271354] qcom-q6adm aprsvc:service:4:8: Failed to close copp -110
+== ADSP still alive?
+running
+mixer ok (DSP responsive)
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2579 phrog
+EXIT 0

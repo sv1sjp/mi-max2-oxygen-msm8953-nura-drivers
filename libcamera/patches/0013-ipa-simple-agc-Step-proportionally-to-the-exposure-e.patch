@@ -1,0 +1,119 @@
+From 187b4911cdf94f074fee6ea58817339f572d6e98 Mon Sep 17 00:00:00 2001
+From: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+Date: Tue, 29 Sep 2026 19:44:00 +0300
+Subject: [PATCH 13/14] ipa: simple: agc: Step proportionally to the exposure
+ error
+
+Step by 10% to 2x per statistics frame depending on how far the mean
+sample value is from the optimum, spilling between exposure and gain,
+so a badly exposed start converges in a few statistics frames.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+---
+ src/ipa/simple/algorithms/agc.cpp | 71 +++++++++++++++++++------------
+ 1 file changed, 43 insertions(+), 28 deletions(-)
+
+diff --git a/src/ipa/simple/algorithms/agc.cpp b/src/ipa/simple/algorithms/agc.cpp
+index 2f7e040..33e5d20 100644
+--- a/src/ipa/simple/algorithms/agc.cpp
++++ b/src/ipa/simple/algorithms/agc.cpp
+@@ -7,6 +7,7 @@
+ 
+ #include "agc.h"
+ 
++#include <algorithm>
+ #include <stdint.h>
+ 
+ #include <libcamera/base/log.h>
+@@ -44,45 +45,59 @@ Agc::Agc()
+ void Agc::updateExposure(IPAContext &context, IPAFrameContext &frameContext, double exposureMSV)
+ {
+ 	/*
+-	 * kExpDenominator of 10 gives ~10% increment/decrement;
+-	 * kExpDenominator of 5 - about ~20%
++	 * Step by at least 10%, and proportionally to the distance from the
++	 * optimum (at most 2x) so a badly exposed start converges in a few
++	 * statistics frames instead of dozens. The MSV is a coarse 1..5 bin
++	 * average, so the proportional step stays well-damped near the target.
+ 	 */
+-	static constexpr uint8_t kExpDenominator = 10;
+-	static constexpr uint8_t kExpNumeratorUp = kExpDenominator + 1;
+-	static constexpr uint8_t kExpNumeratorDown = kExpDenominator - 1;
++	static constexpr double kMinStep = 1.1;
++	static constexpr double kMaxStep = 2.0;
+ 
+ 	int32_t &exposure = frameContext.sensor.exposure;
+ 	double &again = frameContext.sensor.gain;
++	const auto &agc = context.configuration.agc;
+ 
+ 	if (exposureMSV < kExposureOptimal - kExposureSatisfactory) {
+-		if (exposure < context.configuration.agc.exposureMax) {
+-			int32_t next = exposure * kExpNumeratorUp / kExpDenominator;
+-			if (next - exposure < 1)
+-				exposure += 1;
+-			else
+-				exposure = next;
+-		} else {
+-			double next = again * kExpNumeratorUp / kExpDenominator;
+-			if (next - again < context.configuration.agc.againMinStep)
+-				again += context.configuration.agc.againMinStep;
+-			else
+-				again = next;
++		double step = std::clamp(kExposureOptimal / std::max(exposureMSV, 0.5),
++					 kMinStep, kMaxStep);
++		if (exposure < agc.exposureMax) {
++			double next = exposure * step;
++			if (next > agc.exposureMax) {
++				/* Put what the exposure cannot take into the gain. */
++				step = next / agc.exposureMax;
++				exposure = agc.exposureMax;
++			} else {
++				exposure = std::max(static_cast<int32_t>(next), exposure + 1);
++				step = 1.0;
++			}
++		}
++		if (step > 1.0) {
++			double next = again * step;
++			if (next - again < agc.againMinStep)
++				next = again + agc.againMinStep;
++			again = next;
+ 		}
+ 	}
+ 
+ 	if (exposureMSV > kExposureOptimal + kExposureSatisfactory) {
+-		if (again > context.configuration.agc.again10) {
+-			double next = again * kExpNumeratorDown / kExpDenominator;
+-			if (again - next < context.configuration.agc.againMinStep)
+-				again -= context.configuration.agc.againMinStep;
+-			else
++		double step = std::clamp(exposureMSV / kExposureOptimal,
++					 kMinStep, kMaxStep);
++		if (again > agc.again10) {
++			double next = again / step;
++			if (next < agc.again10) {
++				/* Take the rest of the step from the exposure. */
++				step = agc.again10 / next;
++				again = agc.again10;
++			} else {
++				if (again - next < agc.againMinStep)
++					next = again - agc.againMinStep;
+ 				again = next;
+-		} else {
+-			int32_t next = exposure * kExpNumeratorDown / kExpDenominator;
+-			if (exposure - next < 1)
+-				exposure -= 1;
+-			else
+-				exposure = next;
++				step = 1.0;
++			}
++		}
++		if (step > 1.0) {
++			int32_t next = static_cast<int32_t>(exposure / step);
++			exposure = std::min(next, exposure - 1);
+ 		}
+ 	}
+ 
+-- 
+2.53.0
+

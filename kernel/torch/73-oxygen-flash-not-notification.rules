@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Mi Max 2 (oxygen): the rear flash LED is exposed as "white:flash" for Phosh's
+# torch toggle. Keep feedbackd from using it as a notification light (the phone
+# has a real notification LED, white:indicator).
+SUBSYSTEM=="leds", KERNEL=="white:flash", ENV{FEEDBACKD_TYPE}="", RUN=""

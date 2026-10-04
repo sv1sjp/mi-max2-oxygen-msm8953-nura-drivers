@@ -1,0 +1,58 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.625s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.312s
+loglevel=7
+== ADSP
+adsp: running fw: xiaomi-vince-adsp/adsp.mdt
+[  162.249068] remoteproc remoteproc2: Booting fw image xiaomi-vince-adsp/adsp.mdt, size 7452
+[  162.972251] remoteproc remoteproc2: remote processor adsp is now up
+[  168.898708] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+== amp driver + card
+card after 2s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route + low gain
+route on
+gain 3 dB
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+aplay:
+aplay: main:850: audio open error: Invalid argument
+== dmesg
+[  165.380893] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  165.381005] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  165.381130] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  168.890257] remoteproc remoteproc0: powering up 4080000.remoteproc
+[  168.898708] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+[  168.913465] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  169.056515] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss
+[  172.127141] remoteproc remoteproc0: remote processor 4080000.remoteproc is now up
+[  202.548604] qcom-wcnss-pil a204000.remoteproc: fatal error received: dog.c:1569:Watchdog startup timeout
+[  202.548767] remoteproc remoteproc1: crash detected in a204000.remoteproc: type fatal error
+[  202.549084] remoteproc remoteproc1: handling crash #1 in a204000.remoteproc
+[  202.549118] remoteproc remoteproc1: recovering a204000.remoteproc
+[  207.593226] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  207.618839] remoteproc remoteproc1: stopped remote processor a204000.remoteproc
+[  208.310469] remoteproc remoteproc1: remote processor a204000.remoteproc is now up
+[  208.435970] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  208.436882] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  208.436960] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+[  225.259003] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  225.574720] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  225.575577] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  225.581071] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  225.581785] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  225.582203] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  225.582454] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  225.582593] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  225.582651] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  225.583350] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  225.584317] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  228.508151]  MultiMedia3: ASoC: no backend DAIs enabled for MultiMedia3, possibly missing ALSA mixer-based routing or UCM profile
+== ADSP still alive?
+running
+mixer ok (DSP responsive)
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2588 phrog
+EXIT 0

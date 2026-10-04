@@ -1,0 +1,14 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.414s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.098s
+loglevel=7
+== ADSP: running fw: xiaomi-vince-adsp/adsp.mdt
+card after 2s
+route on (DAPM connected)
+snap quat-idle: 81920 bytes
+snap quat-play: 81920 bytes
+aplay: Playing raw data '/dev/zero' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2643 phrog
+EXIT 0

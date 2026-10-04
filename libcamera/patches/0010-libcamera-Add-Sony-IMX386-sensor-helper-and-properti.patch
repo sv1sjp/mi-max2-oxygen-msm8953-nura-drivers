@@ -1,0 +1,64 @@
+From b98c9259d483e2087e51bef92be60d1560b585d0 Mon Sep 17 00:00:00 2001
+From: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+Date: Tue, 29 Sep 2026 18:27:37 +0300
+Subject: [PATCH 10/14] libcamera: Add Sony IMX386 sensor helper and properties
+
+The IMX386 uses the SMIA++ analogue gain model gain = 512 / (512 - code)
+and a 64 (10-bit) black level, the same as the IMX258. Pixel size 1.25 um.
+Test pattern menu matches the imx386 driver.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+---
+ src/ipa/libipa/camera_sensor_helper.cpp           | 12 ++++++++++++
+ src/libcamera/sensor/camera_sensor_properties.cpp | 11 +++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/ipa/libipa/camera_sensor_helper.cpp b/src/ipa/libipa/camera_sensor_helper.cpp
+index e3e3e53..489ea00 100644
+--- a/src/ipa/libipa/camera_sensor_helper.cpp
++++ b/src/ipa/libipa/camera_sensor_helper.cpp
+@@ -578,6 +578,18 @@ public:
+ };
+ REGISTER_CAMERA_SENSOR_HELPER("imx283", CameraSensorHelperImx283)
+ 
++class CameraSensorHelperImx386 : public CameraSensorHelper
++{
++public:
++	CameraSensorHelperImx386()
++	{
++		/* 64 at 10 bits, SMIA++ gain = 512 / (512 - code) like the imx258 */
++		blackLevel_ = 4096;
++		gain_ = AnalogueGainLinear{ 0, 512, -1, 512 };
++	}
++};
++REGISTER_CAMERA_SENSOR_HELPER("imx386", CameraSensorHelperImx386)
++
+ class CameraSensorHelperImx290 : public CameraSensorHelper
+ {
+ public:
+diff --git a/src/libcamera/sensor/camera_sensor_properties.cpp b/src/libcamera/sensor/camera_sensor_properties.cpp
+index b217363..126f7a5 100644
+--- a/src/libcamera/sensor/camera_sensor_properties.cpp
++++ b/src/libcamera/sensor/camera_sensor_properties.cpp
+@@ -261,6 +261,17 @@ const CameraSensorProperties *CameraSensorProperties::get(const std::string &sen
+ 			.testPatternModes = {},
+ 			.sensorDelays = { },
+ 		} },
++		{ "imx386", {
++			.unitCellSize = { 1250, 1250 },
++			.testPatternModes = {
++				{ controls::draft::TestPatternModeOff, 0 },
++				{ controls::draft::TestPatternModeSolidColor, 1 },
++				{ controls::draft::TestPatternModeColorBars, 2 },
++				{ controls::draft::TestPatternModeColorBarsFadeToGray, 3 },
++				{ controls::draft::TestPatternModePn9, 4 },
++			},
++			.sensorDelays = { },
++		} },
+ 		{ "imx415", {
+ 			.unitCellSize = { 1450, 1450 },
+ 			.testPatternModes = {},
+-- 
+2.53.0
+

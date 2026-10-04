@@ -1,0 +1,21 @@
+leds: pmi8950-torch: optional "label" for the LED name
+
+Applies on top of 0014 (the torch driver from postmarketos-xiaomi-vince). The
+driver always named the LED "white:torch"; Phosh's torch toggle looks for
+"*:flash". Read an optional DT "label" (kernel/dts/...-torch.dtsi sets
+"white:flash"), so the name can differ per device without changing the default.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/leds/leds-qcom-pmi8950-torch.c
++++ b/drivers/leds/leds-qcom-pmi8950-torch.c
+@@ -682,7 +682,9 @@
+ 	torch->mc_cdev.num_colors = PMI8950_TORCH_CHANNELS;
+ 	torch->mc_cdev.subled_info = torch->subled;
+ 	cdev = &torch->mc_cdev.led_cdev;
++	/* Optional DT "label": e.g. "white:flash" is what Phosh's torch toggle looks for. */
+ 	cdev->name = "white:torch";
++	device_property_read_string(dev, "label", &cdev->name);
+ 	cdev->brightness = LED_OFF;
+ 	cdev->max_brightness = PMI8950_TORCH_MAX_BRIGHTNESS;
+ 	cdev->color = LED_COLOR_ID_WHITE;

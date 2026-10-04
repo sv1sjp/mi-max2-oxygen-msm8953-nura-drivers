@@ -1,0 +1,43 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.578s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.283s
+loglevel=7
+== ADSP: running fw: adsp.mdt
+== before
+--- no soundcards ---
+q6afe_topo loaded
+loaded q6afe-clocks
+loaded q6afe-dai
+loaded q6adm
+loaded q6routing
+loaded q6asm-dai
+loaded q6voice
+loaded q6voice-dai
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+card after 1s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route Quaternary + SD0 + low gain
+== start Quaternary playback
+amp PWR=0x40  aplay: Playing raw data '/dev/zero' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+-- mux registers now:
+lpassmux before: 0x0c051000 = 0x00220002
+lpassmux before: 0x0c051004 = 0x00030000
+lpassmux before: 0x0c052000 = 0x00000000
+lpassmux before: 0x0c055000 = 0x00000000
+-- pads active during Quaternary (baseline, before any mux poke):
+== TRY 1: mic_iomux |= QUA_WS_SLAVE_SEL(bit17)+SCLK(bit1) [mainline apq8016 quaternary mux]
+lpassmux after: 0x0c055000 = 0x00000000
+== TRY 2: pri mode muxsel 0x0c055000 = 1
+lpassmux after: 0x0c055000 = 0x00000001
+== amp status + speaker check window (listen ~now for tone if any pad reached the amp)
+amp PWR=0x40 FLAGS38=0x00 FLAGS39=0x00
+== dmesg tail
+[  145.287429] Module q6afe is blacklisted
+[  145.293471] Module q6afe is blacklisted
+[  145.680996] Module q6afe is blacklisted
+[  161.423680] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  168.341214] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  175.250164] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2587 phrog
+EXIT 0

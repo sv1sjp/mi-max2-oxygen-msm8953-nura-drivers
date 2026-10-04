@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * TEST: Quinary speaker set up like the working Fairphone 3 (sdm632-fairphone-fp3):
+ * the sound card has ONLY the Quinary link (Primary/Tertiary links and routing
+ * deleted) and the MI2S pins are 88/91/93 + ws 92 only (94/95 left alone).
+ * On top of the minimal Quinary DT (vince ADSP firmware).
+ */
+#include "msm8953-xiaomi-oxygen-quin-min.dts"
+
+&sound_card {
+	/delete-property/ audio-routing;
+	/delete-node/ primary-mi2s-dai-link;
+	/delete-node/ tertiary-mi2s-dai-link;
+};
+
+&quin_mi2s_act {
+	sck-data-pins {
+		pins = "gpio88", "gpio91", "gpio93";
+	};
+};
+
+&quin_mi2s_sus {
+	sck-data-pins {
+		pins = "gpio88", "gpio91", "gpio93";
+	};
+};

@@ -1,0 +1,19 @@
+media: i2c: dw9768: add the Dongwoon DW9763 compatible
+
+The Mi Max 2 rear camera focuses with a Dongwoon DW9763 voice-coil driver. It
+has the same register map as the DW9768 (power, ring-mode control, 10-bit
+position), so the mainline dw9768 driver drives it unchanged; it only needs to
+match "dongwoon,dw9763", the compatible used in kernel/dts/.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/media/i2c/dw9768.c	2026-09-29 20:45:58.036385626 +0300
++++ b/drivers/media/i2c/dw9768.c	2026-09-29 20:45:58.037177537 +0300
+@@ -528,6 +528,7 @@
+ }
+ 
+ static const struct of_device_id dw9768_of_table[] = {
++	{ .compatible = "dongwoon,dw9763" },
+ 	{ .compatible = "dongwoon,dw9768" },
+ 	{ .compatible = "giantec,gt9769" },
+ 	{}

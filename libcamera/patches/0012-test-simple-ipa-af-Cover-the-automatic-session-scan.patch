@@ -1,0 +1,115 @@
+From e463ac94621ab3a12ffe33d40701fc9581c73f44 Mon Sep 17 00:00:00 2001
+From: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+Date: Tue, 29 Sep 2026 18:34:57 +0300
+Subject: [PATCH 12/14] test: simple-ipa-af: Cover the automatic session scan
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+---
+ test/simple-ipa-af.cpp | 83 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+
+diff --git a/test/simple-ipa-af.cpp b/test/simple-ipa-af.cpp
+index cf5b724..c66a1d5 100644
+--- a/test/simple-ipa-af.cpp
++++ b/test/simple-ipa-af.cpp
+@@ -179,6 +179,7 @@ protected:
+ 	int run() override
+ 	{
+ 		if (!testConfiguration() || !testAlgorithmOptIn() ||
++		    !testAutoTrigger() ||
+ 		    !testSuccess() ||
+ 		    !testCancel() || !testLensFailure() ||
+ 		    !testSceneFailures() || !testExposureFailures() ||
+@@ -249,6 +250,88 @@ protected:
+ 		return true;
+ 	}
+ 
++	int32_t firstRequestState(Af &algorithm, IPAContext &context)
++	{
++		IPAFrameContext frameContext{};
++		ControlList none;
++		algorithm.queueRequest(context, 0, frameContext, none);
++
++		SwIspStats stats{};
++		ControlList metadata(controls::controls);
++		algorithm.process(context, 0, frameContext, &stats, metadata);
++		return metadata.get(controls::AfState).value_or(-1);
++	}
++
++	bool testAutoTrigger()
++	{
++		Control<int32_t> focus(V4L2_CID_FOCUS_ABSOLUTE, "Focus",
++				       "v4l2", ControlId::Direction::In);
++		ControlIdMap idMap{ { V4L2_CID_FOCUS_ABSOLUTE, &focus } };
++		ControlInfoMap lensControls(
++			{ { &focus, ControlInfo(0, 1023, 0) } }, idMap);
++
++		for (bool enabled : { false, true }) {
++			IPAContext context(16);
++			context.lensControls = &lensControls;
++			Af algorithm;
++			unique_ptr<ValueNode> tuning = tuningData();
++			if (enabled)
++				tuning->add("autoTrigger",
++					    make_unique<ValueNode>(true));
++
++			IPAConfigInfo configInfo{};
++			configInfo.lensControls = lensControls;
++			if (algorithm.init(context, *tuning) ||
++			    !algorithm.available() ||
++			    algorithm.configure(context, configInfo)) {
++				cerr << "autoTrigger=" << enabled
++				     << ": AF setup failed" << endl;
++				return false;
++			}
++
++			const int32_t expected = enabled
++							 ? controls::AfStateScanning
++							 : controls::AfStateIdle;
++			int32_t state = firstRequestState(algorithm, context);
++			if (state != expected) {
++				cerr << "autoTrigger=" << enabled
++				     << ": first request state " << state << endl;
++				return false;
++			}
++
++			/* A new session (stop, start) scans again. */
++			algorithm.resetSession();
++			state = firstRequestState(algorithm, context);
++			if (state != expected) {
++				cerr << "autoTrigger=" << enabled
++				     << ": second session state " << state << endl;
++				return false;
++			}
++		}
++
++		/* An explicit trigger from the app wins over the automatic scan. */
++		IPAContext context(16);
++		context.lensControls = &lensControls;
++		Af algorithm;
++		unique_ptr<ValueNode> tuning = tuningData();
++		tuning->add("autoTrigger", make_unique<ValueNode>(true));
++		IPAConfigInfo configInfo{};
++		configInfo.lensControls = lensControls;
++		algorithm.init(context, *tuning);
++		algorithm.configure(context, configInfo);
++
++		IPAFrameContext frameContext{};
++		ControlList cancel(controls::controls);
++		cancel.set(controls::AfTrigger, controls::AfTriggerCancel);
++		algorithm.queueRequest(context, 0, frameContext, cancel);
++		if (firstRequestState(algorithm, context) != controls::AfStateIdle) {
++			cerr << "automatic scan overrode an app AfTrigger" << endl;
++			return false;
++		}
++
++		return true;
++	}
++
+ private:
+ 	bool testConfiguration()
+ 	{
+-- 
+2.53.0
+

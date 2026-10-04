@@ -1,0 +1,62 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.622s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.300s
+loglevel=7
+== ADSP
+adsp: running fw: xiaomi-vince-adsp/adsp.mdt
+[   99.702418] remoteproc remoteproc2: Booting fw image xiaomi-vince-adsp/adsp.mdt, size 7452
+[  100.333124] remoteproc remoteproc2: remote processor adsp is now up
+[  106.434642] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+== amp driver + card
+card after 2s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route + low gain
+route on
+gain 3 dB
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+aplay:
+PERIODS: 4
+BUFFER_TIME: 520000
+BUFFER_SIZE: 24960
+BUFFER_BYTES: 99840
+TICK_TIME: 0
+== dmesg
+[  106.449344] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  106.598040] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss
+[  108.742362] remoteproc remoteproc0: remote processor 4080000.remoteproc is now up
+[  137.010319] qcom-wcnss-pil a204000.remoteproc: fatal error received: dog.c:1569:Watchdog startup timeout
+[  137.010451] remoteproc remoteproc1: crash detected in a204000.remoteproc: type fatal error
+[  137.011495] remoteproc remoteproc1: handling crash #1 in a204000.remoteproc
+[  137.011529] remoteproc remoteproc1: recovering a204000.remoteproc
+[  142.053991] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  142.115571] remoteproc remoteproc1: stopped remote processor a204000.remoteproc
+[  142.838308] remoteproc remoteproc1: remote processor a204000.remoteproc is now up
+[  142.965252] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  142.966136] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  142.966208] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+[  148.698338] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  148.755846] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  148.774919] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  148.780190] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  148.783608] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  148.787087] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  148.790621] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  148.794990] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  148.799140] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  148.848575] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  148.864874] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  153.574260] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  153.574411] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f
+[  153.574435] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  156.647160] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  156.647307] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX
+[  156.647342] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110
+== ADSP still alive?
+running
+mixer ok (DSP responsive)
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2586 phrog
+EXIT 0

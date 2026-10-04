@@ -1,0 +1,10 @@
+# build output (kernel/build-modules.sh, libcamera/prepare-src.sh + xbuild.sh)
+kernel/out/
+libcamera/src/
+libcamera/out/
+libcamera/*.tar.gz
+# editor settings
+.obsidian/
+# third-party files, downloaded by fetch-upstream.sh (they stay in their authors' repositories)
+libcamera/patches/000[1-9]-*.patch
+kernel/torch/leds-qcom-pmi8950-torch.c

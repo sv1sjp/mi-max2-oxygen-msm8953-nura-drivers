@@ -1,0 +1,83 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.528s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.210s
+loglevel=7
+== swap ADSP firmware to vince
+wcd digital codec unbound
+Terminated
+offline
+sh: write error: Invalid argument
+adsp: offline fw: vince/adsp.mdt
+[  358.331889] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+wcd digital codec rebound
+== amp driver + card
+card after 1s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+                      xiaomi-oxygen
+numid=179,iface=MIXER,name='QUIN_MI2S_RX Audio Mixer MultiMedia3'
+numid=51,iface=MIXER,name='Speaker ASI Channel'
+numid=50,iface=MIXER,name='Speaker Amp Gain Volume'
+== route + low gain
+numid=179,iface=MIXER,name='QUIN_MI2S_RX Audio Mixer MultiMedia3'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=50,iface=MIXER,name='Speaker Amp Gain Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=15,step=0
+  : values=3
+  | dBscale-min=0.00dB,step=1.00dB,mute=0
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+PERIODS: 4
+BUFFER_TIME: 520000
+BUFFER_SIZE: 24960
+BUFFER_BYTES: 99840
+TICK_TIME: 0
+== dmesg
+[  167.786804] remoteproc remoteproc0: remote processor 4080000.remoteproc is now up
+[  212.709722] qcom-wcnss-pil a204000.remoteproc: timeout waiting for ssctl service
+[  222.953146] wcn36xx: ERROR Timeout! No SMD response to req 79 in 10000ms
+[  233.193207] wcn36xx: ERROR Timeout! No SMD response to req 40 in 10000ms
+[  243.434050] wcn36xx: ERROR Timeout! No SMD response to req 40 in 10000ms
+[  253.674771] wcn36xx: ERROR Timeout! No SMD response to req 30 in 10000ms
+[  263.915213] wcn36xx: ERROR Timeout! No SMD response to req 14 in 10000ms
+[  274.154970] wcn36xx: ERROR Timeout! No SMD response to req 46 in 10000ms
+[  284.395049] wcn36xx: ERROR Timeout! No SMD response to req 18 in 10000ms
+[  294.635025] wcn36xx: ERROR Timeout! No SMD response to req 44 in 10000ms
+[  304.875350] wcn36xx: ERROR Timeout! No SMD response to req 44 in 10000ms
+[  315.118697] wcn36xx: ERROR Timeout! No SMD response to req 42 in 10000ms
+[  325.356400] wcn36xx: ERROR Timeout! No SMD response to req 76 in 10000ms
+[  335.595003] wcn36xx: ERROR Timeout! No SMD response to req 28 in 10000ms
+[  345.838802] wcn36xx: ERROR Timeout! No SMD response to req 127 in 10000ms
+[  356.075178] wcn36xx: ERROR Timeout! No SMD response to req 2 in 10000ms
+[  356.220433] remoteproc remoteproc2: stopped remote processor a204000.remoteproc
+[  358.331232] remoteproc remoteproc2: powering up a204000.remoteproc
+[  358.331889] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+[  358.367412] qcom-wcnss-pil a204000.remoteproc: error -22 initializing firmware vince/adsp.mdt
+[  358.367612] remoteproc remoteproc2: Failed to load program segments: -22
+[  358.367705] remoteproc remoteproc2: Boot failed: -22
+[  393.239911] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  393.265283] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  393.265852] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  393.265929] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  393.265964] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  393.266006] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  393.266049] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  393.266101] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  393.266149] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  393.267399] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  393.267733] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  393.421711] input: xiaomi-oxygen Headset Jack as /devices/platform/soc@0/c051000.sound-card/sound/card0/input4
+[  397.802846] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  397.802983] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f
+[  397.802997] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  400.875241] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  400.875399] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX
+[  400.875435] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110
+== ADSP still alive?
+offline
+mixer ok
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2570 phrog
+EXIT 0

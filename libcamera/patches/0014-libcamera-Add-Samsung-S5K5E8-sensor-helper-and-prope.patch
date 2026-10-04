@@ -1,0 +1,65 @@
+From 370241f90267733fd188abbdbcf96ab8e9e4103d Mon Sep 17 00:00:00 2001
+From: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+Date: Wed, 30 Sep 2026 13:02:06 +0300
+Subject: [PATCH 14/14] libcamera: Add Samsung S5K5E8 sensor helper and
+ properties
+
+The S5K5E8 reports the SMIA++ analogue gain model m0 = 1, c1 = 32, i.e.
+gain = code / 32 (codes 32..512 = 1x..16x), and a 64 (10-bit) black level.
+Pixel size 1.12 um. Test pattern menu matches the s5k5e8 driver.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+---
+ src/ipa/libipa/camera_sensor_helper.cpp           | 12 ++++++++++++
+ src/libcamera/sensor/camera_sensor_properties.cpp | 11 +++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/ipa/libipa/camera_sensor_helper.cpp b/src/ipa/libipa/camera_sensor_helper.cpp
+index 489ea00..077d803 100644
+--- a/src/ipa/libipa/camera_sensor_helper.cpp
++++ b/src/ipa/libipa/camera_sensor_helper.cpp
+@@ -590,6 +590,18 @@ public:
+ };
+ REGISTER_CAMERA_SENSOR_HELPER("imx386", CameraSensorHelperImx386)
+ 
++class CameraSensorHelperS5k5e8 : public CameraSensorHelper
++{
++public:
++	CameraSensorHelperS5k5e8()
++	{
++		/* 64 at 10 bits; SMIA++ gain = code / 32 (m0 = 1, c1 = 32) */
++		blackLevel_ = 4096;
++		gain_ = AnalogueGainLinear{ 1, 0, 0, 32 };
++	}
++};
++REGISTER_CAMERA_SENSOR_HELPER("s5k5e8", CameraSensorHelperS5k5e8)
++
+ class CameraSensorHelperImx290 : public CameraSensorHelper
+ {
+ public:
+diff --git a/src/libcamera/sensor/camera_sensor_properties.cpp b/src/libcamera/sensor/camera_sensor_properties.cpp
+index 126f7a5..d7a300e 100644
+--- a/src/libcamera/sensor/camera_sensor_properties.cpp
++++ b/src/libcamera/sensor/camera_sensor_properties.cpp
+@@ -504,6 +504,17 @@ const CameraSensorProperties *CameraSensorProperties::get(const std::string &sen
+ 			},
+ 			.sensorDelays = { },
+ 		} },
++		{ "s5k5e8", {
++			.unitCellSize = { 1120, 1120 },
++			.testPatternModes = {
++				{ controls::draft::TestPatternModeOff, 0 },
++				{ controls::draft::TestPatternModeSolidColor, 1 },
++				{ controls::draft::TestPatternModeColorBars, 2 },
++				{ controls::draft::TestPatternModeColorBarsFadeToGray, 3 },
++				{ controls::draft::TestPatternModePn9, 4 },
++			},
++			.sensorDelays = { },
++		} },
+ 		{ "vd55g1", {
+ 			.unitCellSize = { 2160, 2160 },
+ 			.testPatternModes = {
+-- 
+2.53.0
+

@@ -1,0 +1,4 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Mi Max 2 (oxygen): rear camera + rear LED torch. */
+#include "msm8953-xiaomi-oxygen-camera.dts"
+#include "msm8953-xiaomi-oxygen-torch.dtsi"

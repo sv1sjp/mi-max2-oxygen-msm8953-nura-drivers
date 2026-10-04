@@ -1,0 +1,79 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.485s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.170s
+loglevel=7
+== ADSP: running fw: adsp.mdt
+== modules
+== before
+--- no soundcards ---
+q6afe_topo loaded
+loaded q6afe-clocks
+loaded q6afe-dai
+loaded q6adm
+loaded q6routing
+loaded q6asm-dai
+loaded q6voice
+loaded q6voice-dai
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+card after 1s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route (MultiMedia3 -> QUAT_MI2S_RX) + low gain
+route on (DAPM connected)
+gain 3 dB
+== SD0 -> beeps-1.wav
+route on (DAPM connected)
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-1.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  168.791518] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  171.727452] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+== SD1 -> beeps-2.wav
+route on (DAPM connected)
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-2.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  171.727452] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  178.057075] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  181.656160] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+== SD2 -> beeps-3.wav
+route on (DAPM connected)
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-3.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  181.656160] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  189.090364] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  193.172333] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+== SD3 -> beeps-4.wav
+route on (DAPM connected)
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-4.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  193.172333] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  201.016327] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+[  205.773125] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+== dmesg
+[   99.910646] Module q6afe is blacklisted
+[   99.916643] Module q6afe is blacklisted
+[  149.509791] q6afe_topo: loading out-of-tree module taints kernel.
+[  149.633994] Module q6afe is blacklisted
+[  149.643412] Module q6afe is blacklisted
+[  150.044509] Module q6afe is blacklisted
+[  151.394283] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  151.420919] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  151.422140] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  151.422343] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  151.422411] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  151.422474] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  151.422532] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  151.422600] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  151.422657] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  151.423390] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  151.424088] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  168.791518] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  171.727452] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  178.057075] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  181.656160] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  189.090364] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  193.172333] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  201.016327] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+[  205.773125] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+== ADSP: running
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2658 phrog
+EXIT 0

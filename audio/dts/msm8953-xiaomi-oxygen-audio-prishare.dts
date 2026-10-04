@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * TEST - drive the TAS2560 through PRIMARY MI2S instead of Quinary.
+ * The amps sit on the primary MI2S pins; without the quin iomux bit these
+ * pins should carry the primary interface. Internal codec broken on purpose.
+ */
+
+#include "msm8953-xiaomi-oxygen-audio.dts"
+
+&sound_card {
+	/delete-node/ quinary-mi2s-dai-link;
+	/delete-node/ quinary-mi2s-tx-dai-link;
+
+	primary-mi2s-dai-link {
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};
+
+&q6afedai {
+	dai@16 {
+		reg = <PRIMARY_MI2S_RX>;
+		qcom,sd-lines = <2>;
+	};
+};

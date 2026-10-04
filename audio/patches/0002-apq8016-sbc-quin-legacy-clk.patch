@@ -1,0 +1,20 @@
+Author: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/sound/soc/qcom/apq8016_sbc.c	2026-09-30 19:21:16.055143926 +0300
++++ b/sound/soc/qcom/apq8016_sbc.c	2026-09-30 19:21:16.056013412 +0300
+@@ -193,8 +193,15 @@
+ 	}
+ }
+ 
++static bool quin_legacy_clk = true;
++module_param(quin_legacy_clk, bool, 0444);
++MODULE_PARM_DESC(quin_legacy_clk, "TEST: use LPAIF_BIT_CLK (v1) for Quinary MI2S");
++
+ static int qdsp6_get_bit_clk_id(struct apq8016_sbc_data *data, int mi2s_id)
+ {
++	if (mi2s_id == MI2S_QUINARY && quin_legacy_clk)
++		return LPAIF_BIT_CLK;
++
+ 	if (data->use_ibit_clk) {
+ 		switch (mi2s_id) {
+ 		case MI2S_PRIMARY:

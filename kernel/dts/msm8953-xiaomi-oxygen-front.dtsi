@@ -1,0 +1,54 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Mi Max 2 (oxygen) front camera: Samsung S5K5E8 (Q-tech or O-film module) on
+ * CCI0 0x2d, CSIPHY2 with 2 lanes at 836 Mbps. Wiring from the downstream oxygen
+ * DT and libmmcamera_oxygen_s5k5e8_*: MCLK1 24 MHz, reset GPIO129, standby
+ * GPIO130 (high = running), DVDD L23 1.2 V, AVDD L17 2.85 V, DOVDD L6 1.8 V.
+ */
+
+&pm8953_l23 {	/* front DVDD */
+	regulator-min-microvolt = <1200000>;
+	regulator-max-microvolt = <1200000>;
+};
+
+&camss {
+	ports {
+		port@2 {
+			reg = <2>;
+
+			csiphy2_ep: endpoint {
+				data-lanes = <0 1>;
+				remote-endpoint = <&front_cam_ep>;
+			};
+		};
+	};
+};
+
+&cci_i2c0 {
+	camera@2d {
+		compatible = "samsung,s5k5e8";
+		reg = <0x2d>;
+
+		clocks = <&gcc GCC_CAMSS_MCLK1_CLK>;
+		assigned-clocks = <&gcc GCC_CAMSS_MCLK1_CLK>;
+		assigned-clock-rates = <24000000>;
+
+		reset-gpios = <&tlmm 129 GPIO_ACTIVE_LOW>;
+		standby-gpios = <&tlmm 130 GPIO_ACTIVE_LOW>;
+
+		dvdd-supply = <&pm8953_l23>;
+		avdd-supply = <&pm8953_l17>;
+		dovdd-supply = <&pm8953_l6>;
+
+		orientation = <0>;	/* front */
+		rotation = <90>;
+
+		port {
+			front_cam_ep: endpoint {
+				data-lanes = <1 2>;
+				link-frequencies = /bits/ 64 <418000000>;
+				remote-endpoint = <&csiphy2_ep>;
+			};
+		};
+	};
+};

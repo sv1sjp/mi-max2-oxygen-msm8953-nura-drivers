@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Xiaomi Mi Max 2 (oxygen): rear camera Sony IMX386 (Sunny module) on CAMSS
+ * CSIPHY0 / CCI0, with the DW9763 autofocus actuator.
+ *
+ * The 172 MHz link frequency (binned 2016x1508 / 1920x1080 modes) needs the
+ * camss fix "media: qcom: camss: msm8953: no 100 MHz CSIPHY timer".
+ */
+
+#include "msm8953-xiaomi-oxygen.dts"
+
+&pm8953_l2 {	/* rear DVDD */
+	regulator-min-microvolt = <1100000>;
+	regulator-max-microvolt = <1100000>;
+};
+
+&pm8953_l22 {	/* VAF, rear AF actuator and EEPROM */
+	regulator-min-microvolt = <2850000>;
+	regulator-max-microvolt = <2850000>;
+};
+
+&pm8953_l17 {	/* AVDD */
+	regulator-min-microvolt = <2850000>;
+	regulator-max-microvolt = <2850000>;
+};
+
+&camss {
+	vdda-supply = <&pm8953_s3>;
+
+	status = "okay";
+
+	ports {
+		port@0 {
+			reg = <0>;
+
+			csiphy0_ep: endpoint {
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&rear_cam_ep>;
+			};
+		};
+	};
+};
+
+&cci {
+	pinctrl-0 = <&cci0_default>,
+		    <&cci1_default>,
+		    <&camss_mclk0_default>,
+		    <&camss_mclk1_default>;
+
+	status = "okay";
+};
+
+&cci_i2c0 {
+	rear_vcm: camera-lens@c {
+		compatible = "dongwoon,dw9763";
+		reg = <0x0c>;
+
+		vin-supply = <&pm8953_l6>;
+		vdd-supply = <&pm8953_l22>;
+
+		/* Vendor init: 0x06 = 0x61, 0x07 = 0x33 */
+		dongwoon,aac-mode = <3>;
+		dongwoon,aac-timing = <0x33>;
+		dongwoon,clock-presc = <1>;
+	};
+
+	camera@10 {
+		compatible = "sony,imx386";
+		reg = <0x10>;
+
+		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
+		assigned-clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
+		assigned-clock-rates = <24000000>;
+
+		reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
+
+		avdd-supply = <&pm8953_l17>;
+		dvdd-supply = <&pm8953_l2>;
+		dovdd-supply = <&pm8953_l6>;
+
+		orientation = <1>;
+		rotation = <270>;
+
+		lens-focus = <&rear_vcm>;
+
+		port {
+			rear_cam_ep: endpoint {
+				data-lanes = <1 2 3 4>;
+				link-frequencies = /bits/ 64 <498000000 172000000 385000000 446000000>;
+				remote-endpoint = <&csiphy0_ep>;
+			};
+		};
+	};
+};
+
+/* Front camera: Samsung S5K5E8 */
+#include "msm8953-xiaomi-oxygen-front.dtsi"

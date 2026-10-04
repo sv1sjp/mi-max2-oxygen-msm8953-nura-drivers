@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Test DT: Quinary audio test DT + boot the ADSP with the vince (Redmi 5 Plus)
+ * firmware, which has no TI SmartAmp. Files: /usr/lib/firmware/xiaomi-vince-adsp/adsp.*
+ */
+#include "msm8953-xiaomi-oxygen-audio.dts"
+
+&lpass {
+	firmware-name = "xiaomi-vince-adsp/adsp.mdt";
+};

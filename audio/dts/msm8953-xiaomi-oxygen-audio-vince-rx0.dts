@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Test DT: vince ADSP firmware + exactly vince's Quinary config:
+ * RX only, sd-lines <0>, no Quinary TX link.
+ */
+#include "msm8953-xiaomi-oxygen-audio-vince.dts"
+
+&sound_card {
+	/delete-node/ quinary-mi2s-tx-dai-link;
+};
+
+&q6afedai {
+	/delete-node/ dai@128;
+	dai@127 {
+		qcom,sd-lines = <0>;
+	};
+};

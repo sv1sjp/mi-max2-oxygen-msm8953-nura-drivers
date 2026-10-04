@@ -1,0 +1,108 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * TEST - Mi Max 2 loudspeaker: TI TAS2560 on Quinary MI2S.
+ * Builds on the camera test DT.
+ */
+
+#include "msm8953-xiaomi-oxygen-imx386.dts"
+
+&i2c_2 {
+	/* Bottom loudspeaker ("SPK", right channel downstream) */
+	speaker_amp: audio-codec@4c {
+		compatible = "ti,tas2560";
+		reg = <0x4c>;
+		#sound-dai-cells = <0>;
+
+		reset-gpios = <&tlmm 20 GPIO_ACTIVE_LOW>;
+
+		ti,load-ohms = <8>;
+		ti,asi-channel = <2>;	/* (L + R) / 2 */
+
+		sound-name-prefix = "Speaker";
+	};
+};
+
+&sound_card {
+	pinctrl-0 = <&cdc_pdm_lines_act
+		&cdc_pdm_lines_2_act
+		&cdc_pdm_comp_lines_act
+		&tlmm_pri_act
+		&tlmm_pri_ws_default>;
+	pinctrl-1 = <&cdc_pdm_lines_sus
+		&cdc_pdm_lines_2_sus
+		&cdc_pdm_comp_lines_sus
+		&tlmm_pri_sus
+		&tlmm_pri_ws_default>;
+
+	quinary-mi2s-dai-link {
+		link-name = "Quinary MI2S";
+
+		cpu {
+			sound-dai = <&q6afedai QUINARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+
+	/* Speaker protection feedback, started before playback on Android */
+	quinary-mi2s-tx-dai-link {
+		link-name = "Quinary MI2S TX";
+
+		cpu {
+			sound-dai = <&q6afedai QUINARY_MI2S_TX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};
+
+&q6afedai {
+	dai@127 {
+		reg = <QUINARY_MI2S_RX>;
+		/*
+		 * Downstream rx-lines = <0x0c> (SD2 + SD3); for 1-2 channels
+		 * the downstream q6 DAI then uses SD2 alone.
+		 */
+		qcom,sd-lines = <2>;
+	};
+
+	dai@128 {
+		reg = <QUINARY_MI2S_TX>;
+		/* Downstream qcom,msm-mi2s-tx-lines = <0x03>: amp I/V sense */
+		qcom,sd-lines = <0 1>;
+	};
+};
+
+/*
+ * FastRPC to the ADSP: the TI SmartAmp module in the ADSP firmware reads
+ * its tuning (tas2560_{aac,ssi}.bin) from /vendor/lib/rfsa/adsp through a
+ * FastRPC file server (adsprpcd on Android, hexagonrpcd here).
+ */
+&{/soc@0/remoteproc@c200000/smd-edge} {
+	fastrpc {
+		compatible = "qcom,fastrpc";
+		qcom,smd-channels = "fastrpcsmd-apps-dsp";
+		label = "adsp";
+		qcom,non-secure-domain;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cb@1 {
+			compatible = "qcom,fastrpc-compute-cb";
+			reg = <1>;
+		};
+	};
+};

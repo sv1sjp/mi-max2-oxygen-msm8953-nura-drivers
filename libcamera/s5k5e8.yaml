@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# Samsung S5K5E8 (Xiaomi Mi Max 2 "oxygen" front camera, Q-tech/O-film module).
+# Black level 64 at 10 bits (4096 in libcamera's 16-bit scale), read from the
+# sensor. No colour matrix yet: the vendor CCM lives in libchromatix_oxygen_s5k5e8_*
+# on the Android vendor partition and has not been extracted. Fixed focus, no Af.
+%YAML 1.1
+---
+version: 1
+algorithms:
+  - BlackLevel:
+      blackLevel: 4096
+  - Awb:
+  - Adjust:
+  - Agc:
+...

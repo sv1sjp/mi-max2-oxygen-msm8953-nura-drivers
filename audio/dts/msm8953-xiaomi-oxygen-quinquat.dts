@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * TEST: minimal Quinary DT (vince ADSP fw) + an extra Quaternary link on the same
+ * amp, to snapshot LPAIF / Quinary clock registers in a working (Quaternary) and
+ * a frozen (Quinary) state within one boot.
+ */
+#include "msm8953-xiaomi-oxygen-quin-min.dts"
+
+&q6afedai {
+	dai@22 {
+		reg = <QUATERNARY_MI2S_RX>;
+		qcom,sd-lines = <0>;
+	};
+};
+
+&sound_card {
+	quaternary-mi2s-dai-link {
+		link-name = "Quaternary MI2S";
+
+		cpu {
+			sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};

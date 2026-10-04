@@ -1,0 +1,119 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.631s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.317s
+loglevel=7
+== ADSP: running fw: adsp.mdt
+== modules
+== before
+--- no soundcards ---
+q6afe_topo loaded
+loaded q6afe-clocks
+loaded q6afe-dai
+loaded q6adm
+loaded q6routing
+loaded q6asm-dai
+loaded q6voice
+loaded q6voice-dai
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+card after 1s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route (MultiMedia3 -> QUAT_MI2S_RX) + low gain
+route on (DAPM connected)
+gain 3 dB
+[  169.426318] padsample idle: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  169.426426] padsample idle: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  169.426434] padsample idle: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  169.426442] padsample idle: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  169.426449] padsample idle: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  169.426456] padsample idle: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  169.426463] padsample idle: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  169.426470] padsample idle: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+== SD0 -> beeps-1.wav
+route on (DAPM connected)
+[  171.388525] padsample SD0: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.388701] padsample SD0: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  171.388710] padsample SD0: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  171.388718] padsample SD0: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.388725] padsample SD0: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.388732] padsample SD0: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  171.388739] padsample SD0: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  171.388746] padsample SD0: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-1.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  169.929179] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  172.900116] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+== SD1 -> beeps-2.wav
+route on (DAPM connected)
+[  181.069787] padsample SD1: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  181.069908] padsample SD1: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  181.069916] padsample SD1: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  181.069924] padsample SD1: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  181.069931] padsample SD1: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  181.069939] padsample SD1: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  181.069947] padsample SD1: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  181.069954] padsample SD1: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-2.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  172.900116] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  179.564818] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  183.126084] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+== SD2 -> beeps-3.wav
+route on (DAPM connected)
+[  191.813645] padsample SD2: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  191.813859] padsample SD2: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  191.813867] padsample SD2: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  191.813876] padsample SD2: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  191.813887] padsample SD2: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  191.813894] padsample SD2: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  191.813902] padsample SD2: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  191.813909] padsample SD2: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-3.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  183.126084] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  190.328158] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  194.420996] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+== SD3 -> beeps-4.wav
+route on (DAPM connected)
+[  204.306472] padsample SD3: gpio88 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  204.306602] padsample SD3: gpio89 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  204.306612] padsample SD3: gpio90 cfg=0x001 func=0 ones=0/200000 edges=0 idle
+[  204.306619] padsample SD3: gpio91 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  204.306626] padsample SD3: gpio92 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  204.306633] padsample SD3: gpio93 cfg=0x0c4 func=1 ones=0/200000 edges=0 idle
+[  204.306640] padsample SD3: gpio94 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+[  204.306648] padsample SD3: gpio95 cfg=0x0c8 func=2 ones=0/200000 edges=0 idle
+amp PWR(reg7)=0x40 FLAGS38=0x00 FLAGS39=0x00
+aplay: Playing WAVE '/home/user/beeps-4.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+[  194.420996] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  202.730367] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+[  207.471709] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+== dmesg
+[   99.741016] Module q6afe is blacklisted
+[   99.760895] Module q6afe is blacklisted
+[  150.743370] q6afe_topo: loading out-of-tree module taints kernel.
+[  150.846373] Module q6afe is blacklisted
+[  150.870975] Module q6afe is blacklisted
+[  151.225841] Module q6afe is blacklisted
+[  152.029479] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  152.051823] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  152.052701] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  152.052847] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  152.052896] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  152.052956] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  152.053000] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  152.053048] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  152.053098] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  152.053669] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  152.053942] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  169.929179] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  172.900116] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x1
+[  179.564818] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  183.126084] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x2
+[  190.328158] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  194.420996] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x4
+[  202.730367] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+[  207.471709] qcom-q6afe aprsvc:service:4:4: Quaternary MI2S RX: SD mask 0x1 -> 0x8
+== ADSP: running
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2617 phrog
+EXIT 0

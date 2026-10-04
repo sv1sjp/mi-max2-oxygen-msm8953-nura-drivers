@@ -1,0 +1,116 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.634s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.322s
+loglevel=7
+== swap ADSP firmware to vince
+offline
+adsp: running fw: vince/adsp.mdt
+[  160.765727] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+== amp driver + card
+card after 60s:
+--- no soundcards ---
+== NO CARD: diagnostics
+tas2560 q6asm_dai q6afe_dai q6voice_dai q6routing q6voice q6afe_clocks q6adm q6asm snd_q6dsp_common q6cvp q6cvs q6afe q6mvm q6voice_common q6core apr pdr_interface snd_soc_apq8016_sbc snd_soc_qcom_common snd_soc_msm8916_digital qcom_q6v5_pas snd_soc_msm8916_analog qcom_q6v5_mss qcom_pil_info qcom_q6v5 qcom_sysmon qcom_common mdt_loader 
+/sys/bus/i2c/devices/: 0-0045 0-004c 1-0038 2-000c 2-0010 i2c-0 i2c-1 i2c-2 i2c-3 
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Rude variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] RCU Tasks: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+[    0.000000] RCU Tasks Rude: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
+[    0.980827] Advanced Linux Sound Architecture Driver Initialized.
+[    1.059566] VFS: Disk quotas dquot_6.6.0
+[    6.263477]   No soundcards found.
+[   52.410749] systemd[1]: /usr/lib/systemd/system/q6voiced.service:12: Special user nobody configured, this is not safe!
+[   53.019385] systemd[1]: Created slice Slice /system/modprobe.
+[   54.753504] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[   96.006836] qcom-venus 1d00000.venus: probe with driver qcom-venus failed with error -5
+[  101.246319] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:3
+[  101.247267] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:4
+[  101.247580] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[  101.247662] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[  101.247739] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  101.247828] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  101.247930] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  108.626285] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss
+[  158.567160] clk_unregister: unregistering prepared clock: LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE
+[  161.249819] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:3
+[  161.251757] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:4
+[  161.279668] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[  161.281924] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[  161.284799] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  161.288443] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  161.289344] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  169.569127] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  169.588315] msm8916-wcd-digital-codec c0f0000.codec: using zero-initialized flat cache, this may cause unexpected behavior
+[  169.610040] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: PMIC REV: 0	 CODEC Version: 4
+[  169.618758] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619470] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  169.619584] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  169.619647] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619705] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619748] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  169.619792] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  169.619834] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.620437] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  169.620991] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  169.686442] msm8916-wcd-digital-codec c0f0000.codec: ASoC error (-22): at snd_soc_component_set_sysclk() on c0f0000.codec
+[  169.686564] qcom-apq8016-sbc c051000.sound-card: Failed to set mclk: -22
+[  169.686575]  Primary MI2S: ASoC error (-22): at snd_soc_link_init() on Primary MI2S
+[  169.693908] qcom-apq8016-sbc c051000.sound-card: probe with driver qcom-apq8016-sbc failed with error -22
+Invalid card number '0'.
+== route + low gain
+Invalid card number '0'.
+Invalid card number '0'.
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+ALSA lib confmisc.c:165:(snd_config_get_card) [error.core] Cannot get card index for 0
+aplay: main:850: audio open error: No such file or directory
+== dmesg
+[  101.247580] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[  101.247662] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[  101.247739] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  101.247828] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  101.247930] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  105.960693] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: expected cold boot completion
+[  108.400062] remoteproc remoteproc0: powering up 4080000.remoteproc
+[  108.415365] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+[  108.451573] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  108.626285] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss
+[  113.430740] remoteproc remoteproc0: remote processor 4080000.remoteproc is now up
+[  158.567160] clk_unregister: unregistering prepared clock: LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE
+[  158.689514] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  158.691167] remoteproc remoteproc2: stopped remote processor adsp
+[  160.765173] remoteproc remoteproc2: powering up adsp
+[  160.765727] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+[  160.773178] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  161.167692] remoteproc remoteproc2: remote processor adsp is now up
+[  161.249819] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:3
+[  161.251757] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:4
+[  161.279668] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[  161.281924] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[  161.284799] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  161.288443] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  161.289344] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  169.569127] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  169.618758] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619470] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  169.619584] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  169.619647] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619705] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.619748] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  169.619792] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  169.619834] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  169.620437] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  169.620991] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  169.686442] msm8916-wcd-digital-codec c0f0000.codec: ASoC error (-22): at snd_soc_component_set_sysclk() on c0f0000.codec
+[  169.686564] qcom-apq8016-sbc c051000.sound-card: Failed to set mclk: -22
+[  169.686575]  Primary MI2S: ASoC error (-22): at snd_soc_link_init() on Primary MI2S
+[  169.693908] qcom-apq8016-sbc c051000.sound-card: probe with driver qcom-apq8016-sbc failed with error -22
+== ADSP still alive?
+running
+Invalid card number '0'.
+=== RESTORE
+quiet splash
+by-path card0 renderD128 !!! NOT BACK IN NORMAL OS - reboot again
+EXIT 0

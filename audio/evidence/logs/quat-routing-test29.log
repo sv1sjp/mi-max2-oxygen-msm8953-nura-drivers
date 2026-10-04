@@ -1,0 +1,23 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.642s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.322s
+== ADSP: running
+== before
+q6afe_dai              81920  1
+q6routing             385024  2 q6asm_dai
+q6afe_clocks           12288  1
+q6adm                  16384  1 q6routing
+q6afe                  20480  4 q6voice,q6afe_dai,q6afe_clocks,q6adm
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+                      xiaomi-oxygen
+insmod: ERROR: could not insert module /home/user/q6afe_topo.ko: Invalid module format
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+card after 1s
+/home/user/quat-routing-snap.sh: line 12: can't create /sys/module/q6afe_topo/parameters/quat_sd_mask: nonexistent directory
+quat aplay: aplay: main:850: audio open error: Invalid argument
+done
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2600 phrog
+EXIT 0

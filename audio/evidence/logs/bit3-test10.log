@@ -1,0 +1,123 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.639s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.343s
+loglevel=7
+== ADSP
+adsp: running fw: xiaomi-vince-adsp/adsp.mdt
+[   95.919112] remoteproc remoteproc1: remote processor adsp is now up
+[   96.029483] remoteproc remoteproc2: Booting fw image wcnss.mdt, size 7324
+[  105.057124] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+== amp driver + card
+card after 2s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+== route + low gain
+MM3 routes before:
+route on (DAPM connected)
+gain 3 dB
+== DAPM state
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@7:dais/dapm/MultiMedia3 Playback
+MultiMedia3 Playback: Off  in 0 out 1
+ stream MultiMedia3 Playback inactive
+ widget-type dai_in
+ out  "static" "MM_DL3" "c200000.remoteproc:smd-edge:apr:service@7:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@7:dais/dapm/MM_DL3
+MM_DL3: Off  in 0 out 1
+ stream MultiMedia3 Playback inactive
+ widget-type aif_in
+ out  "MultiMedia3" "QUIN_MI2S_RX Audio Mixer" "c200000.remoteproc:smd-edge:apr:service@8:routing"
+ in  "static" "MultiMedia3 Playback" "c200000.remoteproc:smd-edge:apr:service@7:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@8:routing/dapm/QUIN_MI2S_RX Audio Mixer
+QUIN_MI2S_RX Audio Mixer: Off  in 0 out 1
+ widget-type mixer
+ out  "static" "QUIN_MI2S_RX" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+ in  "MultiMedia3" "MM_DL3" "c200000.remoteproc:smd-edge:apr:service@7:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@4:dais/dapm/QUIN_MI2S_RX
+QUIN_MI2S_RX: Off  in 0 out 1
+ widget-type aif_in
+ out  "static" "Quinary MI2S Playback" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+ in  "static" "QUIN_MI2S_RX Voice Mixer" "c200000.remoteproc:smd-edge:apr:service@9:dais"
+ in  "static" "QUIN_MI2S_RX Audio Mixer" "c200000.remoteproc:smd-edge:apr:service@8:routing"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/c200000.remoteproc:smd-edge:apr:service@4:dais/dapm/Quinary MI2S Playback
+Quinary MI2S Playback: Off  in 0 out 1
+ stream Quinary MI2S Playback inactive
+ widget-type dai_in
+ out  "static" "Speaker ASI1 Playback" "tas2560.0-004c"
+ in  "static" "QUIN_MI2S_RX" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ASI1 Playback
+Speaker ASI1 Playback: Off  in 0 out 1
+ stream ASI1 Playback inactive
+ widget-type dai_in
+ out  "static" "Speaker ASI1" "tas2560.0-004c"
+ in  "static" "Quinary MI2S Playback" "c200000.remoteproc:smd-edge:apr:service@4:dais"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ASI1
+Speaker ASI1: Off  in 0 out 1
+ stream ASI1 Playback inactive
+ widget-type aif_in
+ out  "static" "Speaker ClassD" "tas2560.0-004c"
+ in  "static" "Speaker ASI1 Playback" "tas2560.0-004c"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker ClassD
+Speaker ClassD: Off  in 0 out 1
+ widget-type out_drv
+ out  "static" "Speaker OUT" "tas2560.0-004c"
+ in  "static" "Speaker ASI1" "tas2560.0-004c"
+--- /sys/kernel/debug/asoc/xiaomi-oxygen/tas2560.0-004c/dapm/Speaker OUT
+Speaker OUT: Off  in 0 out 1
+ widget-type output
+ in  "static" "Speaker ClassD" "tas2560.0-004c"
+== QDSP6SS 0x0c20002c bit 3 (FP3/SDM632 PAS-vs-PIL difference): clear before START
+[  165.870776] qdsp6ss_bit: reg 0x0c20002c = 0x0000010b (bit3=1)
+[  165.870783] qdsp6ss_bit: cleared -> 0x00000103 (bit3=0)
+== play beeps-1 on Quinary (hw:0,2), retries
+route on (DAPM connected)
+aplay try 1: TICK_TIME: 0
+route on (DAPM connected)
+aplay try 2: aplay: main:850: audio open error: Operation timed out
+route on (DAPM connected)
+aplay try 3: TICK_TIME: 0
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+aplay:
+PERIODS: 4
+BUFFER_TIME: 520000
+BUFFER_SIZE: 24960
+BUFFER_BYTES: 99840
+TICK_TIME: 0
+== dmesg
+[  187.669639] remoteproc remoteproc2: stopped remote processor a204000.remoteproc
+[  188.431908] remoteproc remoteproc2: remote processor a204000.remoteproc is now up
+[  188.559673] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  188.560648] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  188.560756] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+[  191.212743] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+[  191.212891] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX
+[  191.212926] qcom-apq8016-sbc c051000.sound-card: Failed to enable LPAIF bit clk: -110
+[  191.212950]  Quinary MI2S: ASoC error (-110): at snd_soc_link_startup() on Quinary MI2S
+[  191.213016]  Quinary MI2S: ASoC error (-110): at __soc_pcm_open() on Quinary MI2S
+[  191.213045]  MultiMedia3: ASoC error (-110): at dpcm_be_dai_startup() on MultiMedia3
+[  191.213077]  MultiMedia3: ASoC error (-110): at dpcm_fe_dai_startup() on MultiMedia3
+[  209.644835] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  209.644986] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  209.645016] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f
+[  209.645041] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  228.077372] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  228.077647] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  228.077680] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f
+[  228.077707] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  228.353069] qcom-wcnss-pil a204000.remoteproc: fatal error received: dog.c:1569:Watchdog startup timeout
+[  228.353277] remoteproc remoteproc2: crash detected in a204000.remoteproc: type fatal error
+[  228.353578] remoteproc remoteproc2: handling crash #3 in a204000.remoteproc
+[  228.353614] remoteproc remoteproc2: recovering a204000.remoteproc
+[  233.452669] qcom-wcnss-pil a204000.remoteproc: timed out on wait
+[  233.490524] remoteproc remoteproc2: stopped remote processor a204000.remoteproc
+[  234.228030] remoteproc remoteproc2: remote processor a204000.remoteproc is now up
+[  234.351737] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: WCNSS Version 1.5 1.2
+[  234.352653] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Direct firmware load for qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin failed with error -2
+[  234.352723] qcom_wcnss_ctrl remoteproc2:smd-edge.WCNSS_CTRL.-1.-1: Failed to load nv file qcom/msm8953/xiaomi/oxygen/WCNSS_qcom_wlan_nv.bin: -2
+== ADSP still alive?
+running
+mixer ok (DSP responsive)
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2633 phrog
+EXIT 0

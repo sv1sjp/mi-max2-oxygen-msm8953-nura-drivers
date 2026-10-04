@@ -1,0 +1,28 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.452s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.130s
+loglevel=7
+== ADSP: running fw: xiaomi-vince-adsp/adsp.mdt
+card after 2s
+route on
+--- idle (card up, before START)
+quinws: before: rcg 80000000 00000000 00000000 00000000 00000000 cbcr 80000000 quin_iomux 00000001 gpio92cfg 0c4
+quinws: before: i2s_ctl 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--- START +0.3 s
+quinws: before: rcg 00000000 00002513 00000001 000000f8 000000f7 cbcr 00000001 quin_iomux 00000001 gpio92cfg 0c4
+quinws: before: i2s_ctl 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004
+--- START +1 s
+quinws: before: rcg 00000000 00002513 00000001 000000f8 000000f7 cbcr 00000001 quin_iomux 00000001 gpio92cfg 0c4
+quinws: before: i2s_ctl 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004
+--- START +2.5 s
+quinws: before: rcg 00000000 00002513 00000001 000000f8 000000f7 cbcr 00000001 quin_iomux 00000001 gpio92cfg 0c4
+quinws: before: i2s_ctl 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004 000f0004
+aplay: TICK_TIME: 0
+[  158.438790] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110
+[  158.438934] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX
+[  161.511195] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2621 phrog
+EXIT 0

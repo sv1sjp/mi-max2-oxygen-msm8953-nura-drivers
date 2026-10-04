@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* TEST - does the ADSP start ANY external MI2S port? Secondary MI2S RX. */
+
+#include "msm8953-xiaomi-oxygen-audio.dts"
+
+&q6afedai {
+	dai@18 {
+		reg = <SECONDARY_MI2S_RX>;
+		qcom,sd-lines = <0>;
+	};
+};
+
+&sound_card {
+	secondary-mi2s-dai-link {
+		link-name = "Secondary MI2S";
+
+		cpu {
+			sound-dai = <&q6afedai SECONDARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};

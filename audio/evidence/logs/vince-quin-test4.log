@@ -1,0 +1,79 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.461s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.152s
+loglevel=7
+== swap ADSP firmware to vince
+after stop: offline
+adsp: running fw: vince/adsp.mdt
+[  101.456288] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+[  151.860733] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+wcd digital codec unbound
+wcd digital codec rebound
+== amp driver + card
+card after 1s:
+ 0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+                      xiaomi-oxygen
+numid=179,iface=MIXER,name='QUIN_MI2S_RX Audio Mixer MultiMedia3'
+numid=51,iface=MIXER,name='Speaker ASI Channel'
+numid=50,iface=MIXER,name='Speaker Amp Gain Volume'
+== route + low gain
+numid=179,iface=MIXER,name='QUIN_MI2S_RX Audio Mixer MultiMedia3'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=50,iface=MIXER,name='Speaker Amp Gain Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=15,step=0
+  : values=3
+  | dBscale-min=0.00dB,step=1.00dB,mute=0
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+aplay: main:850: audio open error: Invalid argument
+== dmesg
+[   98.049536] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[   98.056858] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[   98.057559] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[   98.057926] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[   98.058056] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  101.446034] remoteproc remoteproc0: powering up 4080000.remoteproc
+[  101.456288] remoteproc remoteproc0: Booting fw image mba.mbn, size 238464
+[  101.475435] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  101.608146] qcom_wcnss_ctrl remoteproc1:smd-edge.WCNSS_CTRL.-1.-1: expected cold boot completion
+[  101.632030] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss
+[  103.837932] remoteproc remoteproc0: remote processor 4080000.remoteproc is now up
+[  148.662706] clk_unregister: unregistering prepared clock: LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE
+[  148.741630] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  148.742203] remoteproc remoteproc2: stopped remote processor adsp
+[  151.859992] remoteproc remoteproc2: powering up adsp
+[  151.860733] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+[  151.868690] qcom-wcnss-pil a204000.remoteproc: unexpected response to sysmon event
+[  152.262229] remoteproc remoteproc2: remote processor adsp is now up
+[  152.345783] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:3
+[  152.346734] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:4
+[  152.402320] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:7
+[  152.444692] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:8
+[  152.450842] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:9
+[  152.525056] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:a
+[  152.532706] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding APR/GPR dev: aprsvc:service:4:b
+[  161.019961] Modules linked in: cpufreq_conservative wcn36xx mac80211 btqcomsmd btqca bluetooth cfg80211 ecdh_generic ecc libarc4 rfkill q6voice_dai q6voice q6asm_dai q6routing q6afe_dai q6afe_clocks q6adm q6mvm q6cvp q6asm q6afe q6cvs snd_q6dsp_common q6core q6voice_common apr pdr_interface qcom_pdr_msg qrtr_smd ledtrig_pattern wcnss_ctrl imx386(O) v4l2_cci snd_soc_apq8016_sbc snd_soc_qcom_common qcom_q6v5_pas snd_soc_msm8916_analog snd_soc_msm8916_digital leds_aw2013 qcom_spmi_temp_alarm qcom_spmi_vadc qcom_pon rtc_pm8xxx qcom_vadc_common reboot_mode qcom_camss videobuf2_dma_sg videobuf2_memops qcom_q6v5_mss socinfo qcom_wcnss_pil qrtr qcom_q6v5 qcom_pil_info venus_core v4l2_fwnode rmtfs_mem v4l2_async v4l2_mem2mem qcom_sysmon videobuf2_v4l2 ipa2_lite videobuf2_common qcom_common videodev i2c_qcom_cci mc qcom_memshare qmi_helpers tun binfmt_misc nft_reject_inet nft_reject nf_reject_ipv6 nf_reject_ipv4 nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables nfnetlink uhid fuse ipv6 usb_f_ncm u_ether edt_ft5x06 msm
+[  161.020657]  msm8916_wcd_digital_remove+0x30/0x64 [snd_soc_msm8916_digital]
+[  165.254979] tas2560 0-004c: TAS2560 found, ID register 0x00
+[  165.280421] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  165.281296] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  165.281469] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX1 overwritten
+[  165.281515] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  165.281573] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  165.281624] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  165.281683] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget ADC1 overwritten
+[  165.281745] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: sink widget PDM_RX1 overwritten
+[  165.282480] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  165.282725] qcom,pm8916-wcd-spmi-codec 200f000.spmi:pmic@1:audio-codec@f000: ASoC: source widget PDM_RX3 overwritten
+[  165.440053] input: xiaomi-oxygen Headset Jack as /devices/platform/soc@0/c051000.sound-card/sound/card0/input4
+[  166.697062]  MultiMedia3: ASoC: no backend DAIs enabled for MultiMedia3, possibly missing ALSA mixer-based routing or UCM profile
+== ADSP still alive?
+running
+mixer ok
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2573 phrog
+EXIT 0

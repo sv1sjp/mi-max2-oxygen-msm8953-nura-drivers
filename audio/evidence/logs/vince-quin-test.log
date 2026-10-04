@@ -1,0 +1,28 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.476s]
+Booting                                            OKAY [  0.660s]
+Finished. Total time: 2.163s
+loglevel=7
+== swap ADSP firmware to vince
+offline
+adsp: running fw: vince/adsp.mdt
+[  149.045011] remoteproc remoteproc2: Booting fw image vince/adsp.mdt, size 7452
+== amp driver + card
+--- no soundcards ---
+Invalid card number '0'.
+== route + low gain
+Invalid card number '0'.
+Invalid card number '0'.
+== play beeps-1 on Quinary (hw:0,2) x6
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+amp PWR(reg7)=0x01 FLAGS38=0x00 FLAGS39=0x00
+ALSA lib confmisc.c:165:(snd_config_get_card) [error.core] Cannot get card index for 0
+aplay: main:850: audio open error: No such file or directory
+== dmesg
+== ADSP still alive?
+running
+Invalid card number '0'.
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2586 phrog
+EXIT 0

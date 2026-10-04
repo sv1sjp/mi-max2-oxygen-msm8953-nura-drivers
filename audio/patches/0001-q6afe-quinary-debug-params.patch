@@ -1,0 +1,97 @@
+Author: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/sound/soc/qcom/qdsp6/q6afe.c	2026-09-30 19:21:16.045220778 +0300
++++ b/sound/soc/qcom/qdsp6/q6afe.c	2026-09-30 19:21:16.046036584 +0300
+@@ -91,6 +91,33 @@
+ #define Q6AFE_LPASS_CLK_CONFIG_API_VERSION	0x1
+ #define AFE_MODULE_CLOCK_SET		0x0001028F
+ #define AFE_PARAM_ID_CLOCK_SET		0x00010290
++#define AFE_PARAM_ID_SET_TOPOLOGY	0x0001025A
++#define AFE_API_VERSION_TOPOLOGY_V1	0x1
++/* "No processing" AFE topologies, as used for every device in the ACDB */
++#define AFE_TX_NONE_TOPOLOGY		0x000112FB
++#define AFE_RX_NONE_TOPOLOGY		0x000112FC
++
++struct afe_param_id_set_topology_cfg {
++	u32 minor_version;
++	u32 topology_id;
++} __packed;
++
++static unsigned int pri_sd_mask;
++module_param(pri_sd_mask, uint, 0644);
++MODULE_PARM_DESC(pri_sd_mask, "TEST: override the Primary MI2S RX SD line mask (0 = DT)");
++
++static unsigned int quat_sd_mask;
++module_param(quat_sd_mask, uint, 0644);
++MODULE_PARM_DESC(quat_sd_mask, "TEST: override the Quaternary MI2S RX SD line mask (0 = DT)");
++
++static unsigned int quin_osr_hz;
++module_param(quin_osr_hz, uint, 0644);
++MODULE_PARM_DESC(quin_osr_hz, "TEST: enable LPASS_CLK_ID_QUI_MI2S_OSR at this rate before Quinary START (0 = off)");
++
++static bool quin_none_topology = true;
++module_param(quin_none_topology, bool, 0644);
++MODULE_PARM_DESC(quin_none_topology,
++		 "TEST: send the no-processing AFE topology before starting Quinary MI2S");
+ 
+ /* SLIMbus Rx port on channel 0. */
+ #define AFE_PORT_ID_SLIMBUS_MULTI_CHAN_0_RX      0x4000
+@@ -1516,6 +1543,18 @@
+ 		break;
+ 	}
+ 
++	if (pri_sd_mask && port->id == AFE_PORT_ID_PRIMARY_MI2S_RX) {
++		dev_info(dev, "Primary MI2S RX: SD mask 0x%x -> 0x%x\n",
++			 cfg->sd_line_mask, pri_sd_mask);
++		cfg->sd_line_mask = pri_sd_mask;
++	}
++
++	if (quat_sd_mask && port->id == AFE_PORT_ID_QUATERNARY_MI2S_RX) {
++		dev_info(dev, "Quaternary MI2S RX: SD mask 0x%x -> 0x%x\n",
++			 cfg->sd_line_mask, quat_sd_mask);
++		cfg->sd_line_mask = quat_sd_mask;
++	}
++
+ 	num_sd_lines = hweight_long(cfg->sd_line_mask);
+ 
+ 	switch (num_sd_lines) {
+@@ -1667,6 +1706,39 @@
+ 	struct apr_pkt *pkt;
+ 	int pkt_size;
+ 
++	if (quin_osr_hz && (port_id == AFE_PORT_ID_QUINARY_MI2S_RX ||
++			    port_id == AFE_PORT_ID_QUINARY_MI2S_TX)) {
++		struct afe_clk_set cset = {
++			.clk_set_minor_version = AFE_API_VERSION_CLOCK_SET,
++			.clk_id = Q6AFE_LPASS_CLK_ID_QUI_MI2S_OSR,
++			.clk_freq_in_hz = quin_osr_hz,
++			.clk_attri = Q6AFE_LPASS_CLK_ATTRIBUTE_COUPLE_NO,
++			.clk_root = Q6AFE_LPASS_CLK_ROOT_DEFAULT,
++			.enable = 1,
++		};
++
++		ret = q6afe_set_param(afe, NULL, &cset, AFE_PARAM_ID_CLOCK_SET,
++				      AFE_MODULE_CLOCK_SET, sizeof(cset),
++				      AFE_CLK_TOKEN);
++		dev_info(afe->dev, "port 0x%x: QUI_MI2S_OSR %u Hz: %d\n", port_id, quin_osr_hz, ret);
++	}
++
++	if (quin_none_topology && (port_id == AFE_PORT_ID_QUINARY_MI2S_RX ||
++				   port_id == AFE_PORT_ID_QUINARY_MI2S_TX)) {
++		struct afe_param_id_set_topology_cfg topo = {
++			.minor_version = AFE_API_VERSION_TOPOLOGY_V1,
++			.topology_id = port_id == AFE_PORT_ID_QUINARY_MI2S_RX ?
++				       AFE_RX_NONE_TOPOLOGY : AFE_TX_NONE_TOPOLOGY,
++		};
++
++		ret = q6afe_port_set_param_v2(port, &topo,
++					      AFE_PARAM_ID_SET_TOPOLOGY,
++					      AFE_MODULE_AUDIO_DEV_INTERFACE,
++					      sizeof(topo));
++		dev_info(afe->dev, "port 0x%x: set topology 0x%x: %d\n",
++			 port_id, topo.topology_id, ret);
++	}
++
+ 	ret  = q6afe_port_set_param_v2(port, &port->port_cfg, param_id,
+ 				       AFE_MODULE_AUDIO_DEV_INTERFACE,
+ 				       sizeof(port->port_cfg));

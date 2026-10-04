@@ -1,0 +1,91 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * TEST: plain oxygen DT (own ADSP firmware) + TAS2560 speaker amp on QUATERNARY MI2S RX,
+ * like the upstream Lenovo ThinkSmart View (apq8053): Quaternary drives the same
+ * pri_mi2s pads (88/91/93 + ws 92). Port 0x1006 avoids the SmartAmp hook (0x1016/7).
+ * No camera test DT, no FastRPC node.
+ */
+#include "msm8953-xiaomi-oxygen.dts"
+
+&i2c_2 {
+	speaker_amp: audio-codec@4c {
+		compatible = "ti,tas2560";
+		reg = <0x4c>;
+		#sound-dai-cells = <0>;
+
+		reset-gpios = <&tlmm 20 GPIO_ACTIVE_LOW>;
+
+		ti,load-ohms = <8>;
+		ti,asi-channel = <2>;
+
+		sound-name-prefix = "Speaker";
+	};
+};
+
+&q6afedai {
+	dai@22 {
+		reg = <QUATERNARY_MI2S_RX>;
+		qcom,sd-lines = <0>;
+	};
+};
+
+&sound_card {
+	pinctrl-0 = <&cdc_pdm_lines_act
+		&cdc_pdm_lines_2_act
+		&cdc_pdm_comp_lines_act
+		&quin_mi2s_act>;
+	pinctrl-1 = <&cdc_pdm_lines_sus
+		&cdc_pdm_lines_2_sus
+		&cdc_pdm_comp_lines_sus
+		&quin_mi2s_sus>;
+
+	quaternary-mi2s-dai-link {
+		link-name = "Quaternary MI2S";
+
+		cpu {
+			sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};
+
+&tlmm {
+	quin_mi2s_act: quin-mi2s-active-state {
+		sck-data-pins {
+			pins = "gpio88", "gpio91", "gpio93", "gpio94", "gpio95";
+			function = "pri_mi2s";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		ws-pins {
+			pins = "gpio92";
+			function = "pri_mi2s_ws";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	quin_mi2s_sus: quin-mi2s-sleep-state {
+		sck-data-pins {
+			pins = "gpio88", "gpio91", "gpio93", "gpio94", "gpio95";
+			function = "pri_mi2s";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+
+		ws-pins {
+			pins = "gpio92";
+			function = "pri_mi2s_ws";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+	};
+};

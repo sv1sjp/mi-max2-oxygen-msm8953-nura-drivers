@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* TEST: minimal Quinary DT + daisy (Mi A2 Lite, MAX98927, no SmartAmp) ADSP firmware. */
+#include "msm8953-xiaomi-oxygen-quin-min.dts"
+
+&lpass {
+	firmware-name = "xiaomi-daisy-adsp/adsp.mdt";
+};

@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* TEST - Quinary speaker amp only, internal codec links removed (FP3 style). */
+
+#include "msm8953-xiaomi-oxygen-audio.dts"
+
+&sound_card {
+	/delete-property/ audio-routing;
+	/delete-node/ primary-mi2s-dai-link;
+	/delete-node/ tertiary-mi2s-dai-link;
+};

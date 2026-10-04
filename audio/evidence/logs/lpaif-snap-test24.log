@@ -1,0 +1,24 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.355s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.045s
+loglevel=7
+== ADSP: running fw: xiaomi-vince-adsp/adsp.mdt
+card after 2s
+== Quaternary playback (works)
+QUAT_MI2S_RX route on
+snap quat-lpaif: 65536 bytes
+snap quat-quiclk: 4096 bytes
+quat aplay: TICK_TIME: 0
+== Quinary START (freezes)
+QUIN_MI2S_RX route on
+snap quin-lpaif: 65536 bytes
+snap quin-quiclk: 4096 bytes
+quin aplay: aplay: main:850: audio open error: Operation timed out
+[  173.033724]  Quinary MI2S: ASoC error (-110): at snd_soc_link_startup() on Quinary MI2S
+[  173.033791]  Quinary MI2S: ASoC error (-110): at __soc_pcm_open() on Quinary MI2S
+[  173.033820]  MultiMedia3: ASoC error (-110): at dpcm_be_dai_startup() on MultiMedia3
+[  173.033852]  MultiMedia3: ASoC error (-110): at dpcm_fe_dai_startup() on MultiMedia3
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2624 phrog
+EXIT 0

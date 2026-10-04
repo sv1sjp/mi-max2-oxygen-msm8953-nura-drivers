@@ -1,0 +1,90 @@
+From 0f26644e9b3d71bb67ba1eae88b7501dce968bf1 Mon Sep 17 00:00:00 2001
+From: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+Date: Tue, 29 Sep 2026 18:28:03 +0300
+Subject: [PATCH 11/14] ipa: simple: af: Add optional automatic scan per
+ session
+
+Apps like GNOME Snapshot (via PipeWire) cannot send AfTrigger. With
+'autoTrigger: true' in the Af tuning block, one one-shot scan starts on
+the first request of every session unless the app sends its own trigger.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+---
+ src/ipa/simple/algorithms/af.cpp | 13 ++++++++++++-
+ src/ipa/simple/algorithms/af.h   |  3 +++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/ipa/simple/algorithms/af.cpp b/src/ipa/simple/algorithms/af.cpp
+index a2f9fe1..744ea74 100644
+--- a/src/ipa/simple/algorithms/af.cpp
++++ b/src/ipa/simple/algorithms/af.cpp
+@@ -114,6 +114,8 @@ int Af::init(IPAContext &context, const ValueNode &tuningData)
+ 		return -EINVAL;
+ 	}
+ 
++	autoTrigger_ = tuningData["autoTrigger"].get<bool>(false);
++
+ 	int ret = context.lensControls
+ 			  ? validateLensControls(*context.lensControls)
+ 			  : -ENODEV;
+@@ -141,7 +143,8 @@ int Af::init(IPAContext &context, const ValueNode &tuningData)
+ 	available_ = true;
+ 	LOG(IPASoftAf, Info)
+ 		<< "Enabled handset-local one-shot AF over raw lens interval "
+-		<< configuration_.infinity << "-" << configuration_.macro;
++		<< configuration_.infinity << "-" << configuration_.macro
++		<< (autoTrigger_ ? ", automatic scan at session start" : "");
+ 	return 0;
+ }
+ 
+@@ -167,6 +170,8 @@ int Af::configure([[maybe_unused]] IPAContext &context,
+ 	if (ret)
+ 		return ret;
+ 
++	autoTriggerPending_ = autoTrigger_;
++
+ 	return 0;
+ }
+ 
+@@ -186,10 +191,15 @@ void Af::queueRequest([[maybe_unused]] IPAContext &context,
+ 
+ 	const std::optional<int32_t> trigger = controls.get(controls::AfTrigger);
+ 	if (trigger) {
++		autoTriggerPending_ = false;
+ 		if (*trigger == controls::AfTriggerStart)
+ 			stateMachine_.start();
+ 		else if (*trigger == controls::AfTriggerCancel)
+ 			stateMachine_.cancel();
++	} else if (autoTriggerPending_) {
++		autoTriggerPending_ = false;
++		LOG(IPASoftAf, Debug) << "Starting automatic session AF scan";
++		stateMachine_.start();
+ 	}
+ }
+ 
+@@ -307,6 +317,7 @@ void Af::setLensPositionResult(uint32_t frame, int32_t position,
+ void Af::resetSession()
+ {
+ 	stateMachine_.reset();
++	autoTriggerPending_ = autoTrigger_;
+ 	loggedMetrics_ = 0;
+ 	loggedStatus_ = AfStatus::Idle;
+ 	loggedFailure_ = AfFailure::None;
+diff --git a/src/ipa/simple/algorithms/af.h b/src/ipa/simple/algorithms/af.h
+index 7954c7f..7dcdbea 100644
+--- a/src/ipa/simple/algorithms/af.h
++++ b/src/ipa/simple/algorithms/af.h
+@@ -46,6 +46,9 @@ private:
+ 	AfConfiguration configuration_;
+ 	AfStateMachine stateMachine_;
+ 	bool available_ = false;
++	/* Start one scan per session without an AfTrigger (for apps that send none) */
++	bool autoTrigger_ = false;
++	bool autoTriggerPending_ = false;
+ 	std::size_t loggedMetrics_ = 0;
+ 	AfStatus loggedStatus_ = AfStatus::Idle;
+ 	AfFailure loggedFailure_ = AfFailure::None;
+-- 
+2.53.0
+

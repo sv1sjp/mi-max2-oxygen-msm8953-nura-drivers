@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# Sony IMX386 (Xiaomi Mi Max 2 "oxygen" rear camera, Sunny module): tuning for
+# libcamera's simple IPA (SoftISP). Needs the patched libcamera from this repository:
+# stock libcamera has no Af algorithm, fails to parse the Af block and then refuses
+# the whole file (delete the Af block to use it with stock libcamera).
+%YAML 1.1
+---
+version: 1
+algorithms:
+  - BlackLevel:
+      blackLevel: 4096
+  - Awb:
+  # From the vendor chromatix (libchromatix_oxygen_imx386_snapshot.so @0x6678),
+  # the matrix used twice in its colour correction table. Illuminant unknown.
+  - Ccm:
+      ccms:
+        - ct: 5000
+          ccm: [  1.574, -0.676,  0.102,
+                 -0.278,  1.313, -0.035,
+                 -0.207, -0.547,  1.754 ]
+  - Adjust:
+  # DW9763 raw DAC interval. Measured 2026-09-29: a ceiling ~2.5 m away focused at
+  # 424 (coarse peak 448). EEPROM near-end candidates are 563/598, so 352..656
+  # covers far..close with margin. metricFrames 1 (vince: 3): SoftISP stats are
+  # only valid every 4th frame, so 3 made each position cost ~13 frames (12 s AF).
+  - Af:
+      autoTrigger: true
+      infinity: 352
+      macro: 656
+      coarseStep: 48
+      fineStep: 16
+      settleFrames: 2
+      metricFrames: 1
+      aeMinimumFrames: 12
+      aeWindowFrames: 12
+      aeMaximumFrames: 180
+      maximumMetricFrames: 60
+      aeMaximumRatio: 1.05
+      maximumExposureRatio: 1.25
+      minimumFocusSpread: 0.05
+      minimumMean: 8.0
+      maximumMean: 247.0
+      maximumClippedFraction: 0.30
+      minimumScore: 0.01
+      confirmationMinimumRatio: 0.80
+      confirmationMaximumRatio: 1.25
+  - Agc:
+...
