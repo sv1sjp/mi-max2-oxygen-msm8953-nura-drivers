@@ -86,8 +86,12 @@ for a in "$@"; do
 	*) echo "unknown option: $a" >&2; usage 1 ;;
 	esac
 done
+# Without a part option everything is installed, but a part whose prerequisites are missing
+# (Xiaomi's files are not in this repository) is skipped with a warning instead of stopping
+# the whole install. Asking for a part explicitly (--speaker, --video, --gpu) still stops.
+auto=0
 [ $want_camera = 0 ] && [ $want_led = 0 ] && [ $want_speaker = 0 ] && [ $want_sim = 0 ] && [ $want_gpu = 0 ] \
-	&& [ $want_video = 0 ] && { want_camera=1; want_led=1; want_speaker=1; want_sim=1; want_gpu=1; want_video=1; }
+	&& [ $want_video = 0 ] && { auto=1; want_camera=1; want_led=1; want_speaker=1; want_sim=1; want_gpu=1; want_video=1; }
 want_kernel=0; { [ $want_camera = 1 ] || [ $want_led = 1 ] || [ $want_speaker = 1 ] || [ $want_video = 1 ]; } && want_kernel=1
 
 [ "$(id -u)" = 0 ] || die "run as root (sudo sh install.sh)"
@@ -129,19 +133,36 @@ if [ $want_sim = 1 ]; then
 		|| die "$SIM_UNIT not found (the SIM fix needs Nura/postmarketOS with systemd and msm-modem-uim-selection)"
 fi
 if [ $want_speaker = 1 ]; then
-	systemctl cat "$HRPC_UNIT" >/dev/null 2>&1 && [ -e /usr/lib/udev/rules.d/10-fastrpc.rules ] \
-		|| die "the speaker needs hexagonrpcd with its systemd unit and udev rule: apk add hexagonrpcd hexagonrpcd-systemd hexagonrpcd-udev"
+	spk_err=""
+	if ! { systemctl cat "$HRPC_UNIT" >/dev/null 2>&1 && [ -e /usr/lib/udev/rules.d/10-fastrpc.rules ]; }; then
+		spk_err="the speaker needs hexagonrpcd with its systemd unit and udev rule: apk add hexagonrpcd hexagonrpcd-systemd hexagonrpcd-udev"
+	fi
 	for f in $SPK_FW; do
-		[ -s "$SPK_FW_DIR/$f" ] || die "$SPK_FW_DIR/$f is missing. Xiaomi's ADSP needs it for the speaker; copy tas2560_aac.bin and tas2560_ssi.bin from the phone's Android vendor partition (vendor/lib/rfsa/adsp/) there. See \"Loudspeaker\" in README.md"
+		[ -z "$spk_err" ] && [ ! -s "$SPK_FW_DIR/$f" ] && spk_err="$SPK_FW_DIR/$f is missing. Xiaomi's ADSP needs it for the speaker; copy tas2560_aac.bin and tas2560_ssi.bin from the phone's Android vendor partition (vendor/lib/rfsa/adsp/) there. See \"Loudspeaker\" in README.md"
 	done
+	if [ -n "$spk_err" ]; then
+		[ $auto = 1 ] || die "$spk_err"
+		warn "skipping the loudspeaker and earpiece: $spk_err"
+		want_speaker=0
+	fi
 fi
 if [ $want_gpu = 1 ]; then
-	command -v python3 >/dev/null 2>&1 || die "the touch boost needs python3 (apk add python3)"
+	if ! command -v python3 >/dev/null 2>&1; then
+		[ $auto = 1 ] || die "the touch boost needs python3 (apk add python3)"
+		warn "skipping the GPU renderer and touch boost: python3 is missing (apk add python3)"
+		want_gpu=0
+	fi
 fi
 if [ $want_video = 1 ]; then
+	vid_err=""
 	for f in $VIDEO_FW; do
-		[ -s "$VIDEO_FW_DIR/$f" ] || die "$VIDEO_FW_DIR/$f is missing. The video decoder needs Xiaomi's Venus firmware: copy venus.mdt and venus.b00-b04 from the phone's modem (NON-HLOS) partition, folder image/, there. See \"Hardware video decoding\" in README.md"
+		[ -z "$vid_err" ] && [ ! -s "$VIDEO_FW_DIR/$f" ] && vid_err="$VIDEO_FW_DIR/$f is missing. The video decoder needs Xiaomi's Venus firmware: copy venus.mdt and venus.b00-b04 from the phone's modem (NON-HLOS) partition, folder image/, there. See \"Hardware video decoding\" in README.md"
 	done
+	if [ -n "$vid_err" ]; then
+		[ $auto = 1 ] || die "$vid_err"
+		warn "skipping the hardware video decoder: $vid_err"
+		want_video=0
+	fi
 fi
 if [ $want_camera = 1 ]; then
 	lpkg=$(pkgver libcamera)
@@ -207,6 +228,7 @@ if [ $want_kernel = 1 ]; then
 	[ $want_camera = 1 ] && for m in $CAMERA_MODULES; do kfiles="$kfiles $m.ko"; done
 	[ $want_led = 1 ] && for m in $LED_MODULES; do kfiles="$kfiles $m.ko"; done
 	[ $want_speaker = 1 ] && for m in $SPEAKER_MODULES; do kfiles="$kfiles $m.ko"; done
+	[ $want_video = 1 ] && for m in $VIDEO_MODULES; do kfiles="$kfiles $m.ko"; done
 	for f in $kfiles; do
 		[ -e "$KSRC/$f" ] || die "$KSRC/$f is missing"
 		case "$f" in *.ko)

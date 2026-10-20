@@ -139,6 +139,11 @@ repository.
    sudo sh install.sh            # everything: cameras + rear LED torch + loudspeaker/earpiece + SIM + GPU + video
    sudo reboot
    ```
+   Xiaomi's own files (speaker tuning, Venus firmware) are not in this repository. When
+   they are missing, the plain install skips that part with a warning and installs the rest;
+   copy the files as described in [Loudspeaker](#loudspeaker) and
+   [`video/`](video/README.md), then run `--speaker` or `--video`.
+
    Or pick a part:
    ```sh
    sudo sh install.sh --camera   # both cameras only
