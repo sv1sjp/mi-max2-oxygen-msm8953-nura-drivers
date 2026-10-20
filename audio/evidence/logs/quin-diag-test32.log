@@ -1,0 +1,27 @@
+< waiting for any device >
+Sending 'boot.img' (24618 KB)                      OKAY [  1.468s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.150s
+loglevel=7
+142.33 adsp running
+143.61 hexagonrpcd at start: active [   93.991612] qcom-msm8953 systemd[1]: Started Server for FastRPC remote procedure calls from Qualcomm ADSP - RootPD.|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Starting /usr/bin/hexagonrpcd (INIT_ATTACH) on /dev/fastrpc-adsp|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Could not open remote_heap_config.so: No such file or directory|[   96.307294] qcom-msm8953 hexagonrpcd[2075]: Could not open .//lowi//lowi_lp.conf: No such file or directory|
+sent 69 mask packets
+152.98 diag: cntl open, data open cntl_bytes 3351 masks_sent 69 send_errors 0 rx_bytes 3367 rx_dropped 0 fifo 0 cntl cmds: 1:17 8:1 12:3 22:1 23:1 24:1 25:23 
+insmod: ERROR: could not insert module /home/user/fastrpc.ko: File exists
+153.77 fastrpc: /dev/fastrpc-adsp 
+159.12 hexagonrpcd: active
+159.31 insmod tas2560
+160.95 card after 2s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+171.34 route on
+174.48 aplay start (Quinary START)
+194.81 aplay: Playing WAVE '/home/user/beeps-1.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Stereo
+195.16 dmesg: [    2.305600] l2: Bringing 0uV into 1100000-1100000uV|[   36.275387] systemd[1]: /usr/lib/systemd/system/q6voiced.service:12: Special user nobody configured, this is not safe!|[   94.947950] qcom-q6v5-mss 4080000.remoteproc: MBA booted without debug policy, loading mpss|
+195.31 diag: cntl open, data open cntl_bytes 3351 masks_sent 69 send_errors 0 rx_bytes 63822 rx_dropped 0 fifo 0 cntl cmds: 1:17 8:1 12:3 22:1 23:1 24:1 25:23 
+195.45 adsp running
+195.73 hexagonrpcd at start: active [   93.991612] qcom-msm8953 systemd[1]: Started Server for FastRPC remote procedure calls from Qualcomm ADSP - RootPD.|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Starting /usr/bin/hexagonrpcd (INIT_ATTACH) on /dev/fastrpc-adsp|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Could not open remote_heap_config.so: No such file or directory|[   96.307294] qcom-msm8953 hexagonrpcd[2075]: Could not open .//lowi//lowi_lp.conf: No such file or directory|
+196.09 hexagonrpcd log: [   93.991612] qcom-msm8953 systemd[1]: Started Server for FastRPC remote procedure calls from Qualcomm ADSP - RootPD.|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Starting /usr/bin/hexagonrpcd (INIT_ATTACH) on /dev/fastrpc-adsp|[   95.154760] qcom-msm8953 hexagonrpcd[2075]: Could not open remote_heap_config.so: No such file or directory|[   96.307294] qcom-msm8953 hexagonrpcd[2075]: Could not open .//lowi//lowi_lp.conf: No such file or directory|
+-rw-r--r--    1 root     root         68474 Oct 17 17:05 /home/user/adspdiag/quin-cap.bin
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2599 phrog
+EXIT 0

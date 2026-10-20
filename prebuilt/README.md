@@ -9,8 +9,10 @@ in the main README.
 | Path | Built by | Installed to |
 |---|---|---|
 | `kernel/imx386.ko`, `s5k5e8.ko`, `dw9768.ko`, `qcom-camss.ko` | `../kernel/build-modules.sh` | `/lib/modules/7.0.9-msm8953/updates/` (camera) |
-| `kernel/leds-qcom-pmi8950-torch.ko` | same | same (LED) |
-| `kernel/camera.dtb`, `led.dtb`, `camera-led.dtb` | same | one of them, depending on what is installed, to `/boot/msm8953-xiaomi-oxygen.dtb` and `/boot/dtbs/qcom/msm8953-xiaomi-oxygen.dtb` |
+| `kernel/leds-qcom-pmi8950-torch.ko`, `leds-aw2013.ko` | same | same (LED) |
+| `kernel/tas2560.ko`, `fastrpc.ko` | same | same (speaker) |
+| `kernel/venus-core.ko`, `venus-dec.ko` | same | same (video) |
+| `kernel/camera.dtb`, `led.dtb`, `camera-led.dtb`, `speaker.dtb`, `camera-speaker.dtb`, `led-speaker.dtb`, `camera-led-speaker.dtb` | same | one of them, depending on what is installed, to `/boot/msm8953-xiaomi-oxygen.dtb` and `/boot/dtbs/qcom/msm8953-xiaomi-oxygen.dtb` |
 | `libcamera/usr/...` | `../libcamera/prepare-src.sh` + `xbuild.sh` | the same paths on the phone: this folder is laid out like the phone's filesystem |
 
 `libcamera/usr/share/libcamera/ipa/simple/*.yaml` are copies of `../libcamera/*.yaml`.

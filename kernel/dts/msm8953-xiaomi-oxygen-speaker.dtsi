@@ -1,0 +1,124 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Mi Max 2 (oxygen) bottom loudspeaker and earpiece: two TI TAS2560 on Quinary MI2S
+ * (pri_mi2s pads), driven through the ADSP (q6afe), plus the FastRPC channel to the ADSP.
+ *
+ * Both amps listen on SD2, earpiece ("RCV") on the left slot and loudspeaker ("SPK") on
+ * the right one, as in Xiaomi's Android. Each amp has an "Amp Switch" so UCM can pick
+ * which one plays; the ASI Channel controls choose mono (Left+Right) or stereo.
+ *
+ * Xiaomi's ADSP firmware starts TI SmartAmp on every Quinary port start, and SmartAmp
+ * reads tas2560_{aac,ssi}.bin from Linux over FastRPC. hexagonrpcd (ADSP rootpd) must
+ * therefore run from the moment the ADSP boots, or the port start never completes
+ * (AFE -110). install.sh --speaker sets that up.
+ */
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/sound/qcom,q6afe.h>
+
+&i2c_2 {
+	speaker_amp: audio-codec@4c {
+		compatible = "ti,tas2560";
+		reg = <0x4c>;
+		#sound-dai-cells = <0>;
+
+		reset-gpios = <&tlmm 20 GPIO_ACTIVE_LOW>;
+
+		ti,load-ohms = <8>;
+		ti,asi-channel = <2>;	/* (L + R) / 2 */
+
+		sound-name-prefix = "Speaker";
+	};
+
+	earpiece_amp: audio-codec@4f {
+		compatible = "ti,tas2560";
+		reg = <0x4f>;
+		#sound-dai-cells = <0>;
+
+		reset-gpios = <&tlmm 127 GPIO_ACTIVE_LOW>;
+		/* IRQ on gpio63 (not used by the driver) */
+
+		ti,load-ohms = <8>;
+		ti,asi-channel = <2>;	/* (L + R) / 2 */
+
+		sound-name-prefix = "Earpiece";
+	};
+};
+
+&sound_card {
+	pinctrl-0 = <&cdc_pdm_lines_act
+		&cdc_pdm_lines_2_act
+		&cdc_pdm_comp_lines_act
+		&tlmm_pri_act
+		&tlmm_pri_ws_default>;
+	pinctrl-1 = <&cdc_pdm_lines_sus
+		&cdc_pdm_lines_2_sus
+		&cdc_pdm_comp_lines_sus
+		&tlmm_pri_sus
+		&tlmm_pri_ws_default>;
+
+	quinary-mi2s-dai-link {
+		link-name = "Quinary MI2S";
+
+		cpu {
+			sound-dai = <&q6afedai QUINARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>, <&earpiece_amp>;
+		};
+	};
+
+	/* Speaker protection feedback (amp I/V sense), as on Android */
+	quinary-mi2s-tx-dai-link {
+		link-name = "Quinary MI2S TX";
+
+		cpu {
+			sound-dai = <&q6afedai QUINARY_MI2S_TX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_amp>;
+		};
+	};
+};
+
+&q6afedai {
+	dai@127 {
+		reg = <QUINARY_MI2S_RX>;
+		/* Downstream rx-lines = <0x0c> (SD2 + SD3); for 1-2 channels SD2 alone */
+		qcom,sd-lines = <2>;
+	};
+
+	dai@128 {
+		reg = <QUINARY_MI2S_TX>;
+		/* Downstream qcom,msm-mi2s-tx-lines = <0x03>: amp I/V sense */
+		qcom,sd-lines = <0 1>;
+	};
+};
+
+/* FastRPC to the ADSP (served by hexagonrpcd, adsprpcd on Android) */
+&{/soc@0/remoteproc@c200000/smd-edge} {
+	fastrpc {
+		compatible = "qcom,fastrpc";
+		qcom,smd-channels = "fastrpcsmd-apps-dsp";
+		label = "adsp";
+		qcom,non-secure-domain;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cb@1 {
+			compatible = "qcom,fastrpc-compute-cb";
+			reg = <1>;
+		};
+	};
+};

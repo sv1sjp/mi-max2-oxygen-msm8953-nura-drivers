@@ -1,0 +1,138 @@
+     0.001 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.002 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.003 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.004 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.004 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.005 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.006 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.007 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.009 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.009 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.011 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.011 ms ssid  8500 L261   cannot find file or invalid file descriptor: fd=:-1
+     0.011 ms ssid  8500 L695   dlopen failed, remote_heap_config.so
+     0.011 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.013 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.013 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.015 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.015 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.017 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.018 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.018 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.019 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.021 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.021 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.022 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.024 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.025 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.025 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.026 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.028 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.029 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.029 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.030 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.031 ms ssid  8500 L59    hash 00cec7a9 args 404 100f3 @ f07baf90 FUN_f05551b0
+     0.031 ms ssid  8500 L71    hash a6a24995 args 100f3 @ f07b9d84 FUN_f054d7b8+1d8
+     0.031 ms ssid  8500 L1289  hash a1619df7 args 20 @ f07ba090 FUN_f054c970+38
+     0.031 ms ssid  8500 L120   hash dd3edf0b args 1 10b 177000 1 0 1 @ f07efc8c FUN_f0657334
+     0.031 ms ssid  8500 L737   hash 4179912b args 10b f0a1875c 177000 0 0 @ f07f168c FUN_f0656ee8+f8
+     0.031 ms ssid  8500 L1250  hash faeff53e args 1028f 10290 0 @ f07ba078 FUN_f054c8a0
+     0.031 ms ssid  8500 L801   hash c1051ed7 args 0 @ f07b9dc0 FUN_f054d7b8+360
+     0.031 ms ssid  8500 L59    hash 00cec7a9 args 404 100ef @ f07baf90 FUN_f05551b0
+     0.031 ms ssid  8500 L71    hash a6a24995 args 100ef @ f07b9d84 FUN_f054d7b8+1d8
+     0.031 ms ssid  8500 L95    hash 41b50981 args 100ef 1016 @ f07b9d90 FUN_f054d7b8+258
+     0.031 ms ssid  8500 L1152  hash a1171509 args 30 1016 @ f07ba018 FUN_f054c788+3c
+     0.031 ms ssid  8500 L2240  hash 7020c5b7 args 5 0 1 @ f07b6ca4 FUN_f0537f24
+     0.031 ms ssid  8500 L2241  hash c5fbef71 args 10 3 0 @ f07b6cb0 FUN_f0537f24
+     0.031 ms ssid  8500 L2242  hash b3e99469 args 1 bb80 1 @ f07b6cbc FUN_f0537f24
+     0.031 ms ssid  8500 L801   hash c1051ed7 args 0 @ f07b9dc0 FUN_f054d7b8+360
+     0.031 ms ssid  8500 L59    hash 00cec7a9 args 404 100e5 @ f07baf90 FUN_f05551b0
+     0.031 ms ssid  8500 L71    hash a6a24995 args 100e5 @ f07b9d84 FUN_f054d7b8+1d8
+     0.031 ms ssid  8500 L95    hash 41b50981 args 100e5 1016 @ f07b9d90 FUN_f054d7b8+258
+     0.031 ms ssid  8500 L1088  SmartAmp: request mem for module
+     0.031 ms ssid  8500 L1264  MMPM_SetParameter class type success for client id 21
+     0.031 ms ssid  8500 L1284  MMPM_SetParameter DCVS participation for Only UP success for client id 21 
+     0.031 ms ssid  8500 L1264  MMPM_SetParameter class type success for client id 22
+     0.031 ms ssid  8500 L1284  MMPM_SetParameter DCVS participation for Only UP success for client id 22 
+     0.031 ms ssid  8500 L1264  MMPM_SetParameter class type success for client id 23
+     0.031 ms ssid  8500 L1284  MMPM_SetParameter DCVS participation for Only UP success for client id 23 
+     0.031 ms ssid  8500 L1109  Smartamp: port = 1016, Enable/Disable status = 1
+     0.031 ms ssid  8500 L413   hash 158810e2 args 1016 bb80 2 2 @ f07b9ec8 FUN_f054cf88
+     0.031 ms ssid  8500 L567   hash a8a56263 args 2 608 @ f07b9c7c FUN_f054b77c
+     0.031 ms ssid  8500 L1008  hash 407b07e1 args 2 1016 @ f07b9c28 FUN_f054b77c
+     0.031 ms ssid  8500 L1039  hash 05a65879 args 8ba60 2ee00 0 53ca00 2ee00 0 @ f07b9c34 FUN_f054b77c
+     0.031 ms ssid  8500 L1043  hash 3c7007e5 args 0 0 @ f07b9c40 FUN_f054b77c
+     0.031 ms ssid  8522 L74    hash 41d6316a args  @ f079ff08 FUN_f04bb124
+     0.031 ms ssid  8522 L420   ADSPPM votes: ADSP vote: 0 kHz, SNOC vote: Ab: 1117 KBps; Ib: 82500 KBps, DCVS mode: 0, HFW Window: 20
+     0.031 ms ssid  8500 L122   hash 95dd08eb args  @ f07b89dc FUN_f0545a1c
+     0.031 ms ssid  8500 L301   hash 1a802ec2 args 5 @ f07b8d00 FUN_f0546e18+e8
+     0.031 ms ssid  8500 L218   hash 5eacd0e9 args 7 @ f07b89f4 FUN_f0545a1c
+     0.031 ms ssid  8500 L117   hash 8d241209 args 0 @ f07b8958 FUN_f0545600
+     0.031 ms ssid  8500 L282   hash 92708ed1 args 0 0 @ f07b8964 FUN_f0545600+394
+     0.031 ms ssid  8500 L1052  hash dc322a61 args 0 0 @ f07b88ac FUN_f0544a80
+     0.031 ms ssid  8500 L391   hash d3b91cfd args 6376 53656641 0 1 @ f07b8768 FUN_f0544fd8
+     0.031 ms ssid  8500 L1093  AV timer hw open success with handle: 0xf0b1f520 for port id 0x1016 
+     0.031 ms ssid  8500 L1102  Successfully registered to AFE error handler, port id 0x1016 
+     0.031 ms ssid  8500 L187   hash e9fb909b args 45 41 66 65 44 79 31 30 31 @ f06b8894 FUN_f01e1164
+     0.031 ms ssid  8500 L275   hash 41dac56e args 1016 45 @ f07b96a0 FUN_f0549a68+148
+     0.032 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.033 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.033 ms ssid  8522 L1459  hash 8f0bdf99 args 14b4d 44fc5 26bb8 7 @ f079fad8 FUN_f04ba038+30c
+     0.034 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.034 ms ssid  8522 L1459  hash 8f0bdf99 args 1560f 4664b 281e7 3 @ f079fad8 FUN_f04ba038+30c
+     0.034 ms ssid  8500 L59    hash 00cec7a9 args 404 100f3 @ f07baf90 FUN_f05551b0
+     0.035 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.035 ms ssid  8522 L1459  hash 8f0bdf99 args 15d8a 49fdc 2b866 e @ f079fad8 FUN_f04ba038+30c
+     0.035 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.036 ms ssid  8522 L1459  hash 8f0bdf99 args 15905 46db6 27e87 3 @ f079fad8 FUN_f04ba038+30c
+     0.036 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.037 ms ssid  8522 L1459  hash 8f0bdf99 args 14a1d 44229 272b3 3 @ f079fad8 FUN_f04ba038+30c
+     0.037 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.038 ms ssid  8522 L1459  hash 8f0bdf99 args 15f4a 479f4 29ec0 3 @ f079fad8 FUN_f04ba038+30c
+     0.038 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.039 ms ssid  8522 L1459  hash 8f0bdf99 args 151d3 45b12 2776c 3 @ f079fad8 FUN_f04ba038+30c
+     0.040 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.040 ms ssid  8522 L1459  hash 8f0bdf99 args 14e5d 44fcd 26b0f 3 @ f079fad8 FUN_f04ba038+30c
+     0.041 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.041 ms ssid  8522 L1459  hash 8f0bdf99 args 15b97 46cf8 27409 1 @ f079fad8 FUN_f04ba038+30c
+     0.042 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.042 ms ssid  8522 L1459  hash 8f0bdf99 args 144c6 42f86 2613f 2 @ f079fad8 FUN_f04ba038+30c
+     0.043 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.043 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.044 ms ssid  8522 L1459  hash 8f0bdf99 args 14f97 446e7 26bdf 1 @ f079fad8 FUN_f04ba038+30c
+     0.044 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.045 ms ssid  8522 L1459  hash 8f0bdf99 args 151d9 45ac1 27637 1 @ f079fad8 FUN_f04ba038+30c
+     0.045 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.046 ms ssid  8522 L1459  hash 8f0bdf99 args 153c1 444da 234a7 3 @ f079fad8 FUN_f04ba038+30c
+     0.046 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.047 ms ssid  8522 L1459  hash 8f0bdf99 args 1594f 46cd6 27e62 0 @ f079fad8 FUN_f04ba038+30c
+     0.048 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.048 ms ssid  8522 L1459  hash 8f0bdf99 args 15aec 473f0 2aa99 0 @ f079fad8 FUN_f04ba038+30c
+     0.049 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.049 ms ssid  8522 L1459  hash 8f0bdf99 args 14af7 43e29 2635e 1 @ f079fad8 FUN_f04ba038+30c
+     0.050 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.050 ms ssid  8522 L1459  hash 8f0bdf99 args 15e86 46bf8 26797 0 @ f079fad8 FUN_f04ba038+30c
+     0.051 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.051 ms ssid  8522 L1459  hash 8f0bdf99 args 14dfa 45087 26c41 0 @ f079fad8 FUN_f04ba038+30c
+     0.051 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.052 ms ssid  8522 L1459  hash 8f0bdf99 args 1590f 46cc9 27eaa 0 @ f079fad8 FUN_f04ba038+30c
+     0.052 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.053 ms ssid  8522 L1459  hash 8f0bdf99 args 1597b 46a9c 29c58 1 @ f079fad8 FUN_f04ba038+30c
+     0.053 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.054 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.055 ms ssid  8522 L1459  hash 8f0bdf99 args 15a13 443e7 23504 2 @ f079fad8 FUN_f04ba038+30c
+     0.056 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.056 ms ssid  8522 L1459  hash 8f0bdf99 args 149f6 447b8 262f9 1 @ f079fad8 FUN_f04ba038+30c
+     0.057 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.057 ms ssid  8522 L1459  hash 8f0bdf99 args 14e07 44f70 26b29 2 @ f079fad8 FUN_f04ba038+30c
+     0.058 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.058 ms ssid  8522 L1459  hash 8f0bdf99 args 16d47 4a8c5 2b99e 2 @ f079fad8 FUN_f04ba038+30c
+     0.059 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.059 ms ssid  8522 L1459  hash 8f0bdf99 args 14663 438b0 26f86 1 @ f079fad8 FUN_f04ba038+30c
+     0.059 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.060 ms ssid  8522 L1459  hash 8f0bdf99 args 14285 42889 24db1 2 @ f079fad8 FUN_f04ba038+30c
+     0.060 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.061 ms ssid  8522 L1459  hash 8f0bdf99 args 151a3 45b2d 2772e 2 @ f079fad8 FUN_f04ba038+30c
+     0.061 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144
+     0.062 ms ssid  8522 L1459  hash 8f0bdf99 args 14df2 45035 26bad 3 @ f079fad8 FUN_f04ba038+30c
+     0.062 ms ssid   100 L209   hash cd9e4351 args  @ f069aedc FUN_f0177144

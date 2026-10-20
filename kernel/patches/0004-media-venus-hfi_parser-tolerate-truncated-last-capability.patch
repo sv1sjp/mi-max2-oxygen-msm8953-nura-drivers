@@ -1,0 +1,48 @@
+media: venus: hfi_parser: tolerate a truncated last capability entry
+
+The MSM8953 Venus firmware (VIDEO.VE.4.2-00045, from the Xiaomi Mi Max 2)
+ends its SYS_INIT_DONE reply with a HFI_PROPERTY_PARAM_CAPABILITY_SUPPORTED
+entry that is cut short (20 bytes needed, 12 left). The bounds check then
+rejects the whole reply and the probe fails with -EIO. Keep what was parsed
+before the truncated entry instead.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/media/platform/qcom/venus/hfi_parser.c
++++ b/drivers/media/platform/qcom/venus/hfi_parser.c
+@@ -355,12 +355,26 @@
+ 		case HFI_PROPERTY_PARAM_UNCOMPRESSED_FORMAT_SUPPORTED:
+ 			ret = parse_raw_formats(core, codecs, domain, payload, rem_bytes);
+ 			break;
+-		case HFI_PROPERTY_PARAM_CAPABILITY_SUPPORTED:
++		case HFI_PROPERTY_PARAM_CAPABILITY_SUPPORTED: {
++			struct hfi_capabilities *caps = (void *)payload;
++
+ 			if (rem_bytes < sizeof(struct hfi_capabilities))
+ 				return HFI_ERR_SYS_INSUFFICIENT_RESOURCES;
+ 
++			/*
++			 * MSM8953 firmware (VIDEO.VE.4.2) cuts the last capability
++			 * entry of the SYS_INIT_DONE reply short. Keep what was
++			 * parsed so far instead of failing the whole probe.
++			 */
++			if (caps->num_capabilities <= MAX_CAP_ENTRIES &&
++			    rem_bytes < struct_size(caps, data, caps->num_capabilities)) {
++				dev_dbg(core->dev, "truncated capability entry at end, ignored\n");
++				goto parsed;
++			}
++
+ 			ret = parse_caps(core, codecs, domain, payload);
+ 			break;
++		}
+ 		case HFI_PROPERTY_PARAM_PROFILE_LEVEL_SUPPORTED:
+ 			if (rem_bytes < sizeof(struct hfi_profile_level_supported))
+ 				return HFI_ERR_SYS_INSUFFICIENT_RESOURCES;
+@@ -392,6 +406,7 @@
+ 		rem_bytes -= ret;
+ 	}
+ 
++parsed:
+ 	if (!core->max_sessions_supported)
+ 		core->max_sessions_supported = MAX_SESSIONS;
+ 

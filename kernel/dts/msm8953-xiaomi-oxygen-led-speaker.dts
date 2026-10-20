@@ -1,0 +1,4 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Mi Max 2 (oxygen): rear LED torch + bottom loudspeaker. */
+#include "msm8953-xiaomi-oxygen-led.dts"
+#include "msm8953-xiaomi-oxygen-speaker.dtsi"

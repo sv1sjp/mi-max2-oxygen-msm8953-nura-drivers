@@ -1,15 +1,47 @@
 # Xiaomi Mi Max 2 (`oxygen`) loudspeaker on mainline Linux: research notes
 
-**Status: not solved.** This folder collects everything learned while trying to
+> **✅ SOLVED (2026-10-17, test boot #32): the bottom loudspeaker works.** Use
+> `install.sh --speaker` (see "Loudspeaker" in the [main README](../README.md#loudspeaker)).
+>
+> **✅ Earpiece too (2026-10-18):** the second TAS2560 (0x4f) listens on SD2, left slot; the
+> PM8953 EAR output is not connected. Same `--speaker` install, see "Earpiece" in the
+> [main README](../README.md#earpiece).
+>
+> **Root cause:** Xiaomi's ADSP firmware forces TI SmartAmp on at every Quinary port start
+> (`afe_port_apr_msg_handler`, port 0x1016/0x1017), and `SmartAmp_init` reads
+> `tas2560_*.bin` from Linux over **reverse FastRPC** (`apps_std` `fopen_with_env`). With no
+> FastRPC listener (hexagonrpcd, ADSP rootpd) running *from the ADSP's boot on*, the AFE
+> thread blocks inside that `fopen` forever, so `DEVICE_START` never answers (-110). A
+> listener started later did not help (#31). Most likely the ADSP's own boot-time
+> `fopen("adsp_avs_config.acdb")` / `dlopen(voiceproc_*.so)` gets stuck holding the C
+> library's file lock when nobody listens; Primary/Quaternary never open files, so they
+> worked. That also explains why the vince/daisy firmware "hung too": every test ran
+> without a listener.
+>
+> **How it was found:** a race-free ADSP DIAG client (`adspdiag.ko`; `rpmsg_char` panics the
+> kernel on the ADSP's DIAG_CNTL channel because its callback runs before `priv` is set)
+> and the firmware decompiled with Ghidra, which showed why DIAG had been silent (one F3 mask
+> per SSID range, STM routing, and above all: the ADSP drops all output while apps feature
+> byte 0 is 0). With live ADSP logs, a hanging start (stops after the port's `AfeDy`
+> thread launch, inside `SmartAmp_init`) was compared with a working Primary start.
+> **Corrections to the notes below:** `0x0c0d0004/08/0c` are the LPAIF DMA *interrupt*
+> registers, not a DMA-to-interface routing block; and the old "hexagonrpcd saw no file
+> request" was because stock hexagonrpcd rejects the open modes `w`/`a` before any syscall,
+> so strace showed nothing.
+>
+> Everything below is the research record as it was before the solution. Sections such as
+> "Open hypotheses" and "Where to go next" are historical: they are kept as evidence of what
+> was tried and ruled out, not as open work.
+
+**Research record: this is the status before the fix on 2026-10-17 (see the banner above for the current state).** This folder collects everything learned while trying to
 get the Mi Max 2's loudspeaker working on mainline postmarketOS (about 30 test
 boots, a lot of register work and some ADSP firmware reverse engineering), so that
 anyone can continue from here instead of starting over. The camera, LED torch and
 SIM fixes elsewhere in this repository are independent of this.
 
-What exists today: an ALSA UCM for the internal WCD codec (headphones,
-microphones, see `ucm/`). What does not work: the **bottom loudspeaker**, and the
-earpiece, which sits on the second TAS2560 on the same Quinary interface. The cause
-is narrowed down a lot, but not found.
+What existed then: an ALSA UCM for the internal WCD codec (headphones,
+microphones, see `ucm/`). What did not work: the **bottom loudspeaker**, and the
+earpiece, which sits on the second TAS2560 on the same Quinary interface.
 
 > If you only read one section, read [The problem](#the-problem),
 > [Proven facts](#proven-facts) and [Where to go next](#where-to-go-next).
@@ -278,6 +310,17 @@ addresses in that firmware; `0x0c…` are physical LPASS addresses.
 - Xiaomi's Android kernel uses the SmartAmp module only for calibration get/set
   (`drivers/tas_calib`). Android sends nothing special before START.
 - Qualcomm's own speaker-protection modules (`capi_v2_sp_v2_*`) are in the firmware too.
+- **Per-channel processing (2026-10-18, REA/Ghidra):** the RX callback `0xf05533ec`
+  deinterleaves the stream (optionally swapping channels, or downmixing to mono with
+  `0xf0557050` = (L+R)/2) and calls TI's algorithm `0xf064b8d0` once per channel, with
+  its own profile index (`0xf08ca8a8` ch0 = earpiece, `0xf08ca8b0` ch1 = loudspeaker).
+  The tuning file is a 16-byte header (`#prof 8`, `#ch 2`, 3456 bytes per profile) plus
+  8 profiles; each profile is two 432-word halves (one per channel) of Q31 parameters.
+  Each half has matched pairs of second-order high/low-pass sections (TI format, N1 and
+  D1 halved), i.e. Linkwitz-Riley band splits at about 900 Hz and 4 kHz for its
+  per-band limiter. There is no separate earpiece crossover: Android relies on SmartAmp
+  (which needs the I/V feedback) to keep the earpiece's bass in check. Hence the fixed
+  1 kHz high-pass on the earpiece amp in our "Speaker" device.
 - Because no file request ever reached Linux during a hang, the freeze is **before**
   the tuning-file load. And because firmwares without SmartAmp hang too, SmartAmp is
   not (or not only) the cause.
@@ -445,7 +488,8 @@ Read this before touching a phone.
 
 | Path | What |
 |---|---|
-| `drivers/tas2560/` | **TAS2560 ASoC codec driver** for mainline (paged regmap, reset, PLL from BCLK, Xiaomi's power-up sequence, IV-sense capture). All 172 coefficient bytes verified against Xiaomi's driver. DT: `ti,load-ohms`, `ti,asi-channel`. Works as far as it can be tested (the amp powers up and reports no errors) |
+| [`../kernel/tas2560/`](../kernel/tas2560/) | **TAS2560 ASoC codec driver** for mainline (paged regmap, reset, PLL from BCLK, Xiaomi's power-up sequence, IV-sense capture). All 172 coefficient bytes verified against Xiaomi's driver. DT: `ti,load-ohms`, `ti,asi-channel`. **In use: the loudspeaker works** (moved to `kernel/` when it became part of `install.sh --speaker`) |
+| `drivers/adspdiag/` | **race-free DIAG client for the ADSP** (kernel module): answers the ADSP's control channel itself and gives its debug log in `/sys/kernel/debug/adspdiag/data`; also a read-only SMEM view of the SMD channels (`smd`). Scripts: `adspdiag-masks.py` (resend setup), `adspdiag-raw.py` (capture), `adspdiag-log.py` (decode on the phone), `adspdiag-req.py` (send one request). Do **not** use `rpmsg_char` here: it panics the kernel on DIAG_CNTL |
 | `drivers/quinws/` | drives the Quinary clock + iomux + `I2S_CTL[5]` from Linux (fact 2) |
 | `drivers/quindma/`, `drivers/quinroute/` | Linux LPAIF read-DMA + interface bring-up attempts (fact 7). Parameters: `ch`, `spkmode`, `i2sval`, `slot`, `dry` |
 | `drivers/padsample/` | samples TLMM pad input 200k times to see which pins toggle (`first=`, `samples=`, `tag=`) |
@@ -456,15 +500,17 @@ Read this before touching a phone.
 | `patches/0002-*` | `apq8016_sbc` test knob `quin_legacy_clk` (v1 LPAIF bit clock for Quinary) |
 | `dts/` | every test device tree (`-audio*`, `-quat*`, `-quin*`). `-audio.dts` builds on `msm8953-xiaomi-oxygen-imx386.dts` (included) |
 | `scripts/` | test runners (`testboot.sh`, `*-test.sh`), `mkramboot.sh`, `adsp-diag.py` (experimental ADSP DIAG client), `make-beeps.py` (writes `beeps-1.wav`..`beeps-4.wav`: N beeps, so a listener can report which variant played). The on-phone scripts expect the built `.ko` files and the wav files in `/home/user` (postmarketOS's default user) |
-| `ucm/` | ALSA UCM for oxygen (headphones and mics; no Speaker device yet) |
+| `ucm/` | the UCM before the speaker worked (headphones and mics). The installed one, with the Speaker device, is [`../speaker/ucm/`](../speaker/ucm/) |
 | `android-capture-kit/` | [path A](#a-android-capture-recommended-decisive) |
+| [`adsp-re/ghidra/`](adsp-re/ghidra/README.md) | Ghidra 12.1.4 in Docker: decompile the whole ADSP firmware to C, look up / decompile functions, and `diagdec.py`, which decodes a live ADSP log and maps every message (also the hashed QShrink ones) to the firmware function that logs it |
 | `adsp-re/` | `annot.py` (annotate a disassembly with the firmware's debug strings), `cg.py` (call-graph walker), `certs.py` (list the signing certificates of a firmware image). Bring your own firmware |
 | `evidence/logs/` | the log of every numbered test |
+| `evidence/adsp-diag/` | decoded ADSP logs: `quin30` / `quin31-fastrpc` (hanging Quinary starts), `quin32-hexagonrpcd-boot` (the working one), `prim-normal` (a working Primary start, for comparison) |
 | `evidence/regsnap/` | register snapshots (LPASS clock controller, LPAIF, routing block) in the named states |
 | `history/` | the original working notes (`AUDIO-HANDOFF.md` = full session log, `QUINARY-DRIVER-DESIGN.md`, `ANDROID-APR-CAPTURE.md`). They contain superseded ideas; this README is the corrected summary |
 
-`fastrpc` was also built as a module during the work. It is the unmodified mainline
-`drivers/misc/fastrpc.c` (`CONFIG_QCOM_FASTRPC` is off in pmOS), so it is not included.
+`fastrpc` is the unmodified mainline `drivers/misc/fastrpc.c` (`CONFIG_QCOM_FASTRPC` is off
+in pmOS); `../kernel/build-modules.sh` builds it for `install.sh --speaker`.
 
 ## Test index
 
@@ -490,7 +536,10 @@ Read this before touching a phone.
 | 26 | `quin-slots-test26.log` | read all I2S_CTL slots during the hang | ADSP never writes any slot |
 | 27 | `quin-daisy-test27.log` | daisy firmware (proven-working Quinary) | hangs |
 | 28 | `quat-route-test28.log` | can Quaternary reach the amp pads? | no |
-| 29 | `quat-routing-test29.log` | routing block during idle / Quaternary / Quinary | DMA selector found (fact 8) |
+| 29 | `quat-routing-test29.log` | routing block during idle / Quaternary / Quinary | DMA selector found (fact 8); the "routing block" later turned out to be the DMA interrupt registers |
+| 30 | `quin-diag-test30.log` | Quinary START with the live ADSP log (`scripts/quin-diag-test.sh`) | hangs; the ADSP stops right after the port's `AfeDy` thread launch, inside `SmartAmp_init` |
+| 31 | `quin-diag-test31.log` | same + `fastrpc.ko` + stock hexagonrpcd started late | hangs the same way; hexagonrpcd sees no request |
+| 32 | `quin-diag-test32.log` | same, hexagonrpcd started **from the ADSP's boot** (udev) | **works**: SmartAmp loads `tas2560_*.bin`, the port starts, sound heard |
 
 ## Glossary
 
@@ -529,7 +578,7 @@ Read this before touching a phone.
 ## License and credits
 
 - GPL-2.0, like the main repository (see `../LICENSE`). The device trees in `dts/`
-  are BSD-3-Clause, as stated in their headers. `drivers/tas2560/` is derived from
+  are BSD-3-Clause, as stated in their headers. `kernel/tas2560/` (formerly `drivers/tas2560/`) is derived from
   Xiaomi's GPL TAS2560 driver in the oxygen kernel source.
 - `evidence/` holds measurements from our test phone. No Qualcomm or Xiaomi
   firmware, libraries, disassembly or strings extracted from them are included.

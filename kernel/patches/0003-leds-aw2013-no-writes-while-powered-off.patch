@@ -1,0 +1,30 @@
+leds: aw2013: don't write to the chip while it is powered off
+
+When no LED is on, aw2013_brightness_set() powers the chip down (GCR = 0,
+vcc and vio regulators off). A further brightness_set(LED_OFF) then still
+writes the PWM and LCTR registers of the unpowered chip, which does not ACK:
+the write fails with -ENXIO and the LED core logs "Setting an LED's
+brightness failed (-6)". The pattern trigger (feedbackd) holds brightness 0
+for part of every cycle, so on the Mi Max 2 this repeats every ~2.4 s.
+
+The chip being off already means every LED is off, so return early.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/leds/leds-aw2013.c
++++ b/drivers/leds/leds-aw2013.c
+@@ -163,6 +163,14 @@
+ 		ret = aw2013_chip_enable(led->chip);
+ 		if (ret)
+ 			goto error;
++	} else if (!led->chip->enabled) {
++		/*
++		 * The chip is powered off, so all LEDs are off already. Writing
++		 * to it would fail (no ACK without vcc), e.g. while the pattern
++		 * trigger holds brightness 0.
++		 */
++		ret = 0;
++		goto error;
+ 	}
+ 
+ 	num = led->num;

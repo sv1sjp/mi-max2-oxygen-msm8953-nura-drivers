@@ -1,0 +1,69 @@
+media: venus: msm8953: use a non-NULL EOS buffer address
+
+V4L2_DEC_CMD_STOP / V4L2_ENC_CMD_STOP queue an empty input buffer with the
+EOS flag. For HFI v3 the driver sends it with device address 0. The MSM8953
+firmware (VIDEO.VE.4.2-00045) does return an EOS output buffer for it, but
+the drain never completes: GStreamer's v4l2h264dec waits forever for the
+decoder to stop at the end of every stream (3 out of 3 runs), while with the
+0xdeadb000 dummy address used for the other platforms the stream ends
+cleanly (3 out of 3). Use the dummy address on MSM8953.
+
+Why, from the firmware (decompiled with Ghidra): vDec_validateBuffer() fixes
+a session's content-protection class from its first buffer and requires
+every later buffer to have the same class. The classifier puts any address
+below the firmware image end (0x500000 here) into "CP_UNKNOWN, buffer lies
+in Firmware region", so a NULL EOS buffer does not match a normal
+(non-protected) session: the firmware logs "CP session is compromised",
+raises HFI_ERR_SESSION_FATAL and marks the session broken. 0xdeadb000 lies
+above the CP region end (0x5dc00000) and is classified as non-protected,
+like the session's real buffers. The encoder (VenusVencFWValidateBuffer)
+uses the same classifier.
+
+Signed-off-by: Dimitris Vagiakakos <dimitrislinuxos@protonmail.ch>
+
+--- a/drivers/media/platform/qcom/venus/vdec.c
++++ b/drivers/media/platform/qcom/venus/vdec.c
+@@ -5,6 +5,7 @@
+  */
+ #include <linux/clk.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+@@ -575,7 +576,13 @@
+ 		 * avoids misapplying this quirk and breaking VP9 decode on SC7280.
+ 		 */
+ 
+-		if (IS_IRIS2(inst->core) && is_fw_rev_or_older(inst->core, 1, 0, 87) ||
++		/*
++		 * MSM8953 firmware (VIDEO.VE.4.2) never completes the drain for
++		 * a NULL EOS address, although it is HFI v3: give it the dummy one.
++		 */
++		if (of_device_is_compatible(inst->core->dev->of_node, "qcom,msm8953-venus"))
++			fdata.device_addr = 0xdeadb000;
++		else if (IS_IRIS2(inst->core) && is_fw_rev_or_older(inst->core, 1, 0, 87) ||
+ 		    IS_V3(inst->core))
+ 			fdata.device_addr = 0;
+ 		else
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -5,6 +5,7 @@
+  */
+ #include <linux/clk.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+@@ -549,7 +550,9 @@
+ 
+ 		fdata.buffer_type = HFI_BUFFER_INPUT;
+ 		fdata.flags |= HFI_BUFFERFLAG_EOS;
+-		if (IS_V3(inst->core))
++		/* MSM8953 firmware needs a non-NULL EOS address, see vdec.c */
++		if (IS_V3(inst->core) &&
++		    !of_device_is_compatible(inst->core->dev->of_node, "qcom,msm8953-venus"))
+ 			fdata.device_addr = 0;
+ 		else
+ 			fdata.device_addr = 0xdeadb000;

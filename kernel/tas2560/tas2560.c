@@ -11,6 +11,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
+#include <linux/mutex.h>
 #include <linux/regmap.h>
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
@@ -28,6 +29,8 @@
 #define TAS2560_PWR_ACTIVE_MUTED	0x41
 #define TAS2560_PWR_ACTIVE		0x40
 #define TAS2560_PWR_SHUTDOWN		0x01
+#define TAS2560_PWR_CTRL_2		TAS2560_REG(0, 5)
+#define TAS2560_PWR_ERR			BIT(0)
 #define TAS2560_SR_CTRL1		TAS2560_REG(0, 8)
 #define TAS2560_LOAD			TAS2560_REG(0, 9)
 #define TAS2560_LOAD_MASK		GENMASK(4, 3)
@@ -56,11 +59,16 @@
 #define TAS2560_WCLK_INV		BIT(3)
 #define TAS2560_CLK_ERR_CTRL		TAS2560_REG(0, 33)
 #define TAS2560_INT_GEN			TAS2560_REG(0, 37)
+#define TAS2560_INT_DET_1		TAS2560_REG(0, 38)
+#define TAS2560_INT_DET_2		TAS2560_REG(0, 39)
+#define TAS2560_STATUS_POWER		TAS2560_REG(0, 42)
+#define TAS2560_STATUS_POWER_ON		GENMASK(7, 5)	/* DAC, Class-D, boost */
 #define TAS2560_DR_BOOST		TAS2560_REG(0, 73)
 #define TAS2560_ID			TAS2560_REG(0, 125)
 
 #define TAS2560_HPF_CUTOFF_CTL1		TAS2560_REG(50, 28)
 #define TAS2560_ISENSE_PATH_CTL1	TAS2560_REG(50, 40)
+#define TAS2560_IDLE_CHANNEL_DET	TAS2560_REG(50, 108)
 #define TAS2560_BOOST_ON		TAS2560_REG(51, 16)
 #define TAS2560_BOOST_HEAD		TAS2560_REG(51, 24)
 #define TAS2560_THERMAL_FOLDBACK	TAS2560_REG(51, 100)
@@ -82,6 +90,11 @@ struct tas2560 {
 	u32 asi_channel;
 	unsigned int rate;
 	unsigned int frame_size;
+	struct mutex lock;	/* protects enabled, hpf, streaming and powered */
+	unsigned int hpf;	/* playback high-pass: 0 = off, else index + 1 */
+	bool enabled;		/* "Amp Switch": this amp takes part in the link */
+	bool streaming;		/* ASI clocks running and stream unmuted */
+	bool powered;
 };
 
 /* A coefficient block: consecutive registers starting at @reg */
@@ -99,10 +112,27 @@ static const struct tas2560_block tas2560_hpf[] = {
 	BLOCK4(TAS2560_ISENSE_PATH_CTL1,	0x7f, 0xfb, 0xb5, 0x00),
 	BLOCK4(TAS2560_ISENSE_PATH_CTL1 + 4,	0x80, 0x04, 0x4c, 0x00),
 	BLOCK4(TAS2560_ISENSE_PATH_CTL1 + 8,	0x7f, 0xf7, 0x6a, 0x00),
-	/* All pass */
-	BLOCK4(TAS2560_HPF_CUTOFF_CTL1,		0x7f, 0xff, 0xff, 0xff),
-	BLOCK4(TAS2560_HPF_CUTOFF_CTL1 + 4,	0x00, 0x00, 0x00, 0x00),
-	BLOCK4(TAS2560_HPF_CUTOFF_CTL1 + 8,	0x00, 0x00, 0x00, 0x00),
+	/* The playback HPF follows from tas2560_write_hpf() */
+};
+
+/*
+ * Playback high-pass (B0 P50 R28-R39, N0 N1 D1 in Q31): a first-order filter,
+ * N0 = 1 / (1 + K), N1 = -N0, D1 = (1 - K) / (1 + K), K = tan(pi * fc / fs).
+ * Lets a small speaker (the earpiece) play along with a bigger one without
+ * the bass it cannot reproduce, in place of the ADSP SmartAmp band limiter,
+ * which only runs with I/V feedback.
+ */
+static const unsigned int tas2560_hpf_rates[] = { 8000, 16000, 44100, 48000 };
+
+static const char * const tas2560_hpf_text[] = {
+	"Off", "500 Hz", "1 kHz", "2 kHz",
+};
+
+static const u32 tas2560_hpf_coeffs[][3][2] = {	/* { N0, D1 } */
+	{ { 0x6ac37055, 0x5586e0ab }, { 0x5a82799a, 0x3504f334 }, { 0x40000000, 0x00000000 } },
+	{ { 0x74860056, 0x690c00ac }, { 0x6ac37055, 0x5586e0ab }, { 0x5a82799a, 0x3504f334 } },
+	{ { 0x7b988544, 0x77310a88 }, { 0x77797638, 0x6ef2ec70 }, { 0x6ff13067, 0x5fe260cf } },
+	{ { 0x7bf14a63, 0x77e294c6 }, { 0x782061e3, 0x7040c3c6 }, { 0x711be2a8, 0x6237c54f } },
 };
 
 static const struct tas2560_block tas2560_boost_headroom[] = {
@@ -111,6 +141,14 @@ static const struct tas2560_block tas2560_boost_headroom[] = {
 
 static const struct tas2560_block tas2560_thermal_foldback[] = {
 	BLOCK4(TAS2560_THERMAL_FOLDBACK,	0x39, 0x80, 0x00, 0x00),
+};
+
+/*
+ * Idle channel detection must be off while the clock error blocks are on
+ * (datasheet 9.3.9). Left on, the amp hisses after ~2 s of digital silence.
+ */
+static const struct tas2560_block tas2560_idle_channel_off[] = {
+	BLOCK4(TAS2560_IDLE_CHANNEL_DET,	0x00, 0x00, 0x00, 0x00),
 };
 
 static const struct tas2560_block tas2560_vsense_biquad[] = {
@@ -183,6 +221,34 @@ static int tas2560_write_blocks(struct tas2560 *tas2560,
 
 #define tas2560_write_table(t, table) \
 	tas2560_write_blocks(t, table, ARRAY_SIZE(table))
+
+static int tas2560_write_hpf(struct tas2560 *tas2560)
+{
+	u32 coeff[3] = { 0x7fffffff, 0, 0 };	/* all pass */
+	unsigned int i, j;
+	int ret;
+
+	for (i = 0; tas2560->hpf && i < ARRAY_SIZE(tas2560_hpf_rates); i++) {
+		if (tas2560_hpf_rates[i] != tas2560->rate)
+			continue;
+		coeff[0] = tas2560_hpf_coeffs[i][tas2560->hpf - 1][0];
+		coeff[1] = -coeff[0];
+		coeff[2] = tas2560_hpf_coeffs[i][tas2560->hpf - 1][1];
+		break;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(coeff); i++) {
+		for (j = 0; j < 4; j++) {
+			ret = regmap_write(tas2560->regmap,
+					   TAS2560_HPF_CUTOFF_CTL1 + i * 4 + j,
+					   (coeff[i] >> (24 - j * 8)) & 0xff);
+			if (ret)
+				return ret;
+		}
+	}
+
+	return 0;
+}
 
 static int tas2560_set_load(struct tas2560 *tas2560)
 {
@@ -291,7 +357,15 @@ static int tas2560_set_pll(struct tas2560 *tas2560, unsigned int pll_in)
 
 static int tas2560_power_up(struct tas2560 *tas2560)
 {
+	unsigned int val;
 	int ret;
+
+	/* Clear a previous fault: read the sticky flags, then PWR_ERR */
+	regmap_read(tas2560->regmap, TAS2560_INT_DET_1, &val);
+	regmap_read(tas2560->regmap, TAS2560_INT_DET_2, &val);
+	ret = regmap_write(tas2560->regmap, TAS2560_PWR_CTRL_2, 0);
+	if (ret)
+		return ret;
 
 	ret = regmap_write(tas2560->regmap, TAS2560_PWR,
 			   TAS2560_PWR_ACTIVE_MUTED);
@@ -301,6 +375,8 @@ static int tas2560_power_up(struct tas2560 *tas2560)
 	usleep_range(10000, 11000);
 
 	ret = tas2560_write_table(tas2560, tas2560_hpf);
+	if (!ret)
+		ret = tas2560_write_hpf(tas2560);
 	if (!ret)
 		ret = tas2560_set_load(tas2560);
 	if (!ret)
@@ -318,12 +394,18 @@ static int tas2560_power_up(struct tas2560 *tas2560)
 	if (!ret)
 		ret = regmap_write(tas2560->regmap, TAS2560_PWR,
 				   TAS2560_PWR_ACTIVE);
+	if (ret)
+		return ret;
 
-	return ret;
+	/* Power up reloads the DSP memory defaults: write after a delay */
+	usleep_range(10000, 11000);
+
+	return tas2560_write_table(tas2560, tas2560_idle_channel_off);
 }
 
 static int tas2560_power_down(struct tas2560 *tas2560)
 {
+	unsigned int val;
 	int ret;
 
 	ret = regmap_write(tas2560->regmap, TAS2560_INT_GEN, 0x00);
@@ -338,7 +420,49 @@ static int tas2560_power_down(struct tas2560 *tas2560)
 	msleep(30);
 
 	ret = regmap_write(tas2560->regmap, TAS2560_PWR, TAS2560_PWR_SHUTDOWN);
-	usleep_range(10000, 11000);
+	if (ret)
+		return ret;
+
+	ret = regmap_read_poll_timeout(tas2560->regmap, TAS2560_STATUS_POWER, val,
+				       !(val & TAS2560_STATUS_POWER_ON),
+				       2000, 100000);
+	if (ret)
+		dev_warn(tas2560->dev, "not powered down (status 0x%02x)\n", val);
+
+	return 0;
+}
+
+/* Called with the lock held */
+static int tas2560_update_power(struct tas2560 *tas2560)
+{
+	bool on = tas2560->streaming && tas2560->enabled;
+	int ret = 0;
+
+	if (on && !tas2560->powered)
+		ret = tas2560_power_up(tas2560);
+	else if (!on && tas2560->powered)
+		ret = tas2560_power_down(tas2560);
+	if (!ret)
+		tas2560->powered = on;
+
+	return ret;
+}
+
+/*
+ * The amp only completes its software shutdown while the ASI clocks run. The
+ * DAPM power down comes after the CPU DAI stopped the clocks (q6afe stops the
+ * port in its shutdown), which leaves the DAC, Class-D and boost powered with
+ * PWR_ERR set, and the speaker hisses. So power down on mute, which ASoC
+ * calls before the DAI shutdown, and power up again on unmute (prepare).
+ */
+static int tas2560_set_power(struct tas2560 *tas2560, bool on)
+{
+	int ret;
+
+	mutex_lock(&tas2560->lock);
+	tas2560->streaming = on;
+	ret = tas2560_update_power(tas2560);
+	mutex_unlock(&tas2560->lock);
 
 	return ret;
 }
@@ -352,9 +476,9 @@ static int tas2560_classd_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		return tas2560_power_up(tas2560);
+		return tas2560_set_power(tas2560, true);
 	case SND_SOC_DAPM_PRE_PMD:
-		return tas2560_power_down(tas2560);
+		return tas2560_set_power(tas2560, false);
 	}
 
 	return 0;
@@ -386,10 +510,87 @@ static const char * const tas2560_asi_channel_text[] = {
 static SOC_ENUM_SINGLE_DECL(tas2560_asi_channel_enum, TAS2560_ASI_CHANNEL,
 			    0, tas2560_asi_channel_text);
 
+/*
+ * Several amps can share one DAI link (Mi Max 2: earpiece and loudspeaker on
+ * Quinary MI2S). The switch selects which of them play; it takes effect at
+ * once, also while a stream (e.g. a call) is running.
+ */
+static int tas2560_switch_get(struct snd_kcontrol *kcontrol,
+			      struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+	struct tas2560 *tas2560 = snd_soc_component_get_drvdata(component);
+
+	ucontrol->value.integer.value[0] = tas2560->enabled;
+
+	return 0;
+}
+
+static int tas2560_switch_put(struct snd_kcontrol *kcontrol,
+			      struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+	struct tas2560 *tas2560 = snd_soc_component_get_drvdata(component);
+	bool enabled = ucontrol->value.integer.value[0];
+	int ret;
+
+	mutex_lock(&tas2560->lock);
+	if (enabled == tas2560->enabled) {
+		mutex_unlock(&tas2560->lock);
+		return 0;
+	}
+	tas2560->enabled = enabled;
+	ret = tas2560_update_power(tas2560);
+	mutex_unlock(&tas2560->lock);
+
+	return ret ? ret : 1;
+}
+
+static SOC_ENUM_SINGLE_EXT_DECL(tas2560_hpf_enum, tas2560_hpf_text);
+
+static int tas2560_hpf_get(struct snd_kcontrol *kcontrol,
+			   struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+	struct tas2560 *tas2560 = snd_soc_component_get_drvdata(component);
+
+	ucontrol->value.enumerated.item[0] = tas2560->hpf;
+
+	return 0;
+}
+
+static int tas2560_hpf_put(struct snd_kcontrol *kcontrol,
+			   struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+	struct tas2560 *tas2560 = snd_soc_component_get_drvdata(component);
+	unsigned int hpf = ucontrol->value.enumerated.item[0];
+	int ret = 0;
+
+	if (hpf >= ARRAY_SIZE(tas2560_hpf_text))
+		return -EINVAL;
+
+	mutex_lock(&tas2560->lock);
+	if (hpf == tas2560->hpf) {
+		mutex_unlock(&tas2560->lock);
+		return 0;
+	}
+	tas2560->hpf = hpf;
+	if (tas2560->powered)
+		ret = tas2560_write_hpf(tas2560);
+	mutex_unlock(&tas2560->lock);
+
+	return ret ? ret : 1;
+}
+
 static const struct snd_kcontrol_new tas2560_controls[] = {
 	SOC_SINGLE_TLV("Amp Gain Volume", TAS2560_SPK_CTRL, 0, 15, 0,
 		       tas2560_gain_tlv),
 	SOC_ENUM("ASI Channel", tas2560_asi_channel_enum),
+	SOC_SINGLE_BOOL_EXT("Amp Switch", 0,
+			    tas2560_switch_get, tas2560_switch_put),
+	SOC_ENUM_EXT("Amp High-pass", tas2560_hpf_enum,
+		     tas2560_hpf_get, tas2560_hpf_put),
 };
 
 static int tas2560_hw_params(struct snd_pcm_substream *substream,
@@ -487,9 +688,18 @@ static int tas2560_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 				  TAS2560_DAI_FMT_MASK, dai_fmt);
 }
 
+static int tas2560_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
+{
+	struct tas2560 *tas2560 = snd_soc_component_get_drvdata(dai->component);
+
+	return tas2560_set_power(tas2560, !mute);
+}
+
 static const struct snd_soc_dai_ops tas2560_dai_ops = {
 	.hw_params = tas2560_hw_params,
 	.set_fmt = tas2560_set_dai_fmt,
+	.mute_stream = tas2560_mute_stream,
+	.no_capture_mute = 1,
 };
 
 #define TAS2560_RATES	(SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 | \
@@ -572,7 +782,12 @@ static int tas2560_probe(struct i2c_client *client)
 
 	tas2560->dev = dev;
 	tas2560->rate = 48000;
+	tas2560->enabled = true;
 	i2c_set_clientdata(client, tas2560);
+
+	ret = devm_mutex_init(dev, &tas2560->lock);
+	if (ret)
+		return ret;
 
 	tas2560->regmap = devm_regmap_init_i2c(client, &tas2560_regmap);
 	if (IS_ERR(tas2560->regmap))

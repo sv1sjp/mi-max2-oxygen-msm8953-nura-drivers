@@ -1,0 +1,4 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Mi Max 2 (oxygen): stock device tree + bottom loudspeaker (TAS2560, FastRPC). */
+#include "msm8953-xiaomi-oxygen.dts"
+#include "msm8953-xiaomi-oxygen-speaker.dtsi"

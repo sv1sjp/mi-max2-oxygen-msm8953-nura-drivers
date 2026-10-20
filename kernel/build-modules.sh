@@ -1,8 +1,11 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Build imx386.ko, s5k5e8.ko, dw9768.ko (with the DW9763 compatible), the fixed qcom-camss.ko and
-# leds-qcom-pmi8950-torch.ko, plus the three DTBs (camera, led, camera-led), for the Nura
-# (postmarketOS) kernel linux-postmarketos-qcom-msm8953. Output: ./out/<kernel release>/
+# Build imx386.ko, s5k5e8.ko, dw9768.ko (with the DW9763 compatible), the fixed qcom-camss.ko,
+# leds-qcom-pmi8950-torch.ko, the fixed leds-aw2013.ko (notification LED), tas2560.ko, fastrpc.ko
+# (unchanged upstream driver, not enabled in the Nura kernel), the fixed venus-core.ko and
+# venus-dec.ko (hardware video decoder), plus the seven DTBs (every
+# combination of camera, led and speaker), for the Nura (postmarketOS) kernel
+# linux-postmarketos-qcom-msm8953. Output: ./out/<kernel release>/
 #
 # On the phone, for the kernel it runs (install.sh --newversion does this for you; needs
 # internet and ~3 GB free in /var/tmp, takes roughly 20-40 minutes):
@@ -16,6 +19,7 @@
 #     docker run --rm -v "$PWD:/w" alpine:3.24 sh /w/build-modules.sh
 #   Another kernel: pass its msm8953-mainline tag and its config (zcat /proc/config.gz > config-<version>):
 #     docker run --rm -e TAG=7.1.3-r0 -e CONFIG=config-7.1.3 -v "$PWD:/w" alpine:3.24 sh /w/build-modules.sh
+#   With the source archive already downloaded (e.g. GitHub rate limit): -e TARBALL=/path/in/container
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 PHONE=0; [ "${1:-}" = --phone ] && PHONE=1
@@ -71,7 +75,10 @@ fi
 
 say "downloading kernel source v$TAG"
 mkdir -p "$WORK"; cd "$WORK"
-curl -sSfL -o linux.tar.gz "https://github.com/msm8953-mainline/linux/archive/v$TAG.tar.gz"
+# TARBALL=<file>: use an already downloaded source archive (still checksum-checked)
+if [ -n "${TARBALL:-}" ]; then cp "$TARBALL" linux.tar.gz
+else curl -sSfL -o linux.tar.gz "https://github.com/msm8953-mainline/linux/archive/v$TAG.tar.gz"
+fi
 if [ -n "${SHA512:-}" ]; then echo "$SHA512  linux.tar.gz" | sha512sum -c -; fi
 rm -rf "linux-$TAG" obj m; tar xzf linux.tar.gz; rm linux.tar.gz
 K=$WORK/linux-$TAG; cd "$K"
@@ -107,25 +114,32 @@ else
 fi
 
 say "building the modules"
-mkdir -p "$WORK/m/camss" "$WORK/m/dw9768" "$WORK/m/imx386" "$WORK/m/s5k5e8" "$WORK/m/torch"
+mkdir -p "$WORK/m/camss" "$WORK/m/dw9768" "$WORK/m/imx386" "$WORK/m/s5k5e8" "$WORK/m/torch" \
+	"$WORK/m/tas2560" "$WORK/m/fastrpc" "$WORK/m/aw2013" "$WORK/m/venus"
 cp drivers/media/platform/qcom/camss/* "$WORK/m/camss/"
 cp drivers/media/i2c/dw9768.c "$WORK/m/dw9768/" && echo 'obj-m += dw9768.o' > "$WORK/m/dw9768/Makefile"
 cp "$HERE"/imx386/* "$WORK/m/imx386/"
 cp "$HERE"/s5k5e8/* "$WORK/m/s5k5e8/"
 cp "$HERE/torch/leds-qcom-pmi8950-torch.c" "$HERE/torch/Makefile" "$WORK/m/torch/"
-for d in camss dw9768 imx386 s5k5e8 torch; do $M M="$WORK/m/$d" modules; done
+cp "$HERE"/tas2560/* "$WORK/m/tas2560/"
+cp drivers/misc/fastrpc.c "$WORK/m/fastrpc/" && echo 'obj-m += fastrpc.o' > "$WORK/m/fastrpc/Makefile"
+cp drivers/leds/leds-aw2013.c "$WORK/m/aw2013/" && echo 'obj-m += leds-aw2013.o' > "$WORK/m/aw2013/Makefile"
+cp drivers/media/platform/qcom/venus/* "$WORK/m/venus/"
+for d in camss dw9768 imx386 s5k5e8 torch tas2560 fastrpc aw2013 venus; do $M M="$WORK/m/$d" modules; done
 
 OUT=$HERE/out/$KREL_BUILT
 rm -rf "$OUT" && mkdir -p "$OUT"
 say "building the device trees"
-for v in camera led camera-led; do
+for v in camera led camera-led speaker camera-speaker led-speaker camera-led-speaker; do
 	cpp -nostdinc -I include -I arch/arm64/boot/dts -I arch/arm64/boot/dts/qcom \
 		-I scripts/dtc/include-prefixes -undef -D__DTS__ -x assembler-with-cpp \
 		arch/arm64/boot/dts/qcom/msm8953-xiaomi-oxygen-$v.dts \
 		| "$WORK/obj/scripts/dtc/dtc" -q -I dts -O dtb -o "$OUT/$v.dtb" -
 done
 cp "$WORK/m/camss/qcom-camss.ko" "$WORK/m/dw9768/dw9768.ko" "$WORK/m/imx386/imx386.ko" \
-	"$WORK/m/s5k5e8/s5k5e8.ko" "$WORK/m/torch/leds-qcom-pmi8950-torch.ko" "$OUT/"
+	"$WORK/m/s5k5e8/s5k5e8.ko" "$WORK/m/torch/leds-qcom-pmi8950-torch.ko" \
+	"$WORK/m/tas2560/tas2560.ko" "$WORK/m/fastrpc/fastrpc.ko" "$WORK/m/aw2013/leds-aw2013.ko" \
+	"$WORK/m/venus/venus-core.ko" "$WORK/m/venus/venus-dec.ko" "$OUT/"
 chown -R "$(stat -c %u:%g "$HERE")" "$HERE/out"
 cd "$OUT" && sha256sum -- * && modinfo -F vermagic imx386.ko
 say "done: $OUT"

@@ -8,3 +8,4 @@ libcamera/*.tar.gz
 # third-party files, downloaded by fetch-upstream.sh (they stay in their authors' repositories)
 libcamera/patches/000[1-9]-*.patch
 kernel/torch/leds-qcom-pmi8950-torch.c
+__pycache__/

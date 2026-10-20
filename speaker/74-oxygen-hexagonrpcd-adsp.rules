@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Mi Max 2 (oxygen) loudspeaker: start the FastRPC file server for the ADSP root PD as soon
+# as the ADSP's FastRPC device appears. Xiaomi's ADSP firmware reads its TI SmartAmp tuning
+# (tas2560_*.bin) over FastRPC when the speaker port starts; if nobody serves FastRPC from
+# the ADSP's boot on, the port start never completes (AFE -110). Installed by install.sh --speaker.
+SUBSYSTEM=="misc", KERNEL=="fastrpc-adsp", TAG+="systemd", ENV{SYSTEMD_WANTS}+="hexagonrpcd-adsp-rootpd.service"

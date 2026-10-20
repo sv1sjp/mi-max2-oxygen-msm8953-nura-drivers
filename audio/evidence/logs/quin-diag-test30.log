@@ -1,0 +1,20 @@
+Sending 'boot.img' (24618 KB)                      OKAY [  1.540s]
+Booting                                            OKAY [  0.659s]
+Finished. Total time: 2.245s
+loglevel=7
+146.45 adsp running
+sent 69 mask packets
+155.64 diag: cntl open, data open cntl_bytes 3351 masks_sent 69 send_errors 0 rx_bytes 3065 rx_dropped 0 fifo 0 cntl cmds: 1:17 8:1 12:3 22:1 23:1 24:1 25:23 
+156.10 insmod tas2560
+158.26 card after 2s:  0 [xiaomioxygen   ]: xiaomi-oxygen - xiaomi-oxygen
+168.56 route on
+171.75 aplay start (Quinary START)
+191.92 aplay: TICK_TIME: 0
+192.16 dmesg: [  175.590598] qcom-q6afe aprsvc:service:4:4: AFE enable for port 0x1016 failed -110|[  175.590753] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: fail to start AFE port 7f|[  175.590778] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_prepare() on QUIN_MI2S_RX|[  178.662319] qcom-q6afe aprsvc:service:4:4: AFE set params failed -110|[  178.662473] q6afe-dai c200000.remoteproc:smd-edge:apr:service@4:dais: ASoC error (-110): at snd_soc_dai_set_sysclk() on QUIN_MI2S_RX|[  178.662512] qcom-apq8016-sbc c051000.sound-card: Failed to disable LPAIF bit clk: -110|
+192.22 diag: cntl open, data open cntl_bytes 3351 masks_sent 69 send_errors 0 rx_bytes 22619 rx_dropped 0 fifo 0 cntl cmds: 1:17 8:1 12:3 22:1 23:1 24:1 25:23 
+192.27 adsp running
+-rw-r--r--    1 root     root         27537 Oct 17 14:04 /home/user/adspdiag/quin-cap.bin
+=== RESTORE
+quiet splash
+by-path card0 renderD128 2590 phrog
+EXIT 0

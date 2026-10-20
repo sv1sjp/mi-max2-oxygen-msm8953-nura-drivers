@@ -3,8 +3,8 @@
 This repository brings more of the **Xiaomi Mi Max 2** (codename `oxygen`,
 Snapdragon 625 / MSM8953) to life on **Nura**, the Alpine-based mobile Linux distribution
 previously known as postmarketOS, running the **mainline Linux kernel**. It adds
-both cameras, the rear LED as a torch and working calls, SMS and mobile data, and
-it documents the loudspeaker research so far. Everything is open: sources,
+both cameras, the rear LED as a torch, the loudspeaker and earpiece, GPU drawing for GTK4
+apps, and working calls, SMS and mobile data, and it documents how each of them was made to work. Everything is open: sources,
 patches, prebuilt files, one install script, and write-ups of how each problem
 was found and solved.
 
@@ -22,6 +22,8 @@ already boots it with the mainline kernel (listed as a "testing" device on the
 parts that make it a usable daily phone did not: no cameras, no camera flash, no
 audio, and no calls, SMS or mobile data.
 
+(That is the starting point. What works now is in [Before and after](#before-and-after) and [Detailed status](#detailed-status).)
+
 This project has two goals:
 
 1. **Bring the Mi Max 2 into the native mobile Linux world** as a phone you can
@@ -36,13 +38,15 @@ This project has two goals:
 
 | Feature             | Nura wiki (before) | With this repository                                                                                                                                           |
 | ------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rear camera         | ❌ not working      | ✅ Working - Sony IMX386, 12 MP, autofocus, full field of view at 1080p (preview lags a little, because image processing runs in software)                      |
-| Front camera        | ❌ not working      | ✅ Working - Samsung S5K5E8, 5 MP, new driver (preview lags a little, because image processing runs in software)                                                |
-| Camera flash        | ❌ not working      | ✅ the rear LED works as a torch (4 levels, cool/warm). No photo flash in the camera app (Snapshot) yet, but you can switch the torch on and then take pictures |
+| Rear camera         | ❌ not working      | ✅ Working - Sony IMX386, 12 MP, autofocus, full field of view at 1080p (smooth preview needs `--gpu`; video recording is slow, see [Detailed status](#detailed-status)) |
+| Front camera        | ❌ not working      | ✅ Working - Samsung S5K5E8, 5 MP, new driver                                                                                                                   |
+| Camera flash        | ❌ not working      | ✅ the rear LED works as a torch (4 levels, cool/warm). Switch the torch on, then take pictures |
 | Calls               | ❌ not working      | ✅ working                                                                                                                                                      |
 | SMS                 | ❌ not working      | ✅ working                                                                                                                                                      |
 | Mobile data         | ❌ not working      | ✅ working                                                                                                                                                      |
-| Audio (loudspeaker) | ❌ not working      | ❌ still not working; all research is documented in [`audio/`](audio/README.md) for anyone who wants to continue                                    |
+| Audio (loudspeaker, earpiece) | ❌ not working      | ✅ bottom loudspeaker and earpiece work (`--speaker`, see [Loudspeaker](#loudspeaker) and [Earpiece](#earpiece)) |
+| GTK4 apps drawing   | 🟡 on the CPU (cairo) | ✅ on the GPU (`--gpu`, see [GPU renderer](#gpu-renderer-for-gtk4-apps)): smoother apps and camera preview |
+| Hardware video decoding | ❌ Venus fails to start | ✅ Venus decodes H.264 and more (`--video`, see [`video/`](video/README.md)); hardware *encoding* still not working |
 
 Details and limits of each part: [Detailed status](#detailed-status).
 
@@ -94,13 +98,13 @@ the models learned from. We respect that decision. So:
 ## How to use this repository
 
 - **Use your Mi Max 2 with Nura:** follow [Install](#install-prebuilt). One
-  script installs everything, or pick parts with `--camera`, `--led`, `--sim`.
+  script installs everything, or pick parts with `--camera`, `--led`, `--speaker`, `--sim`, `--gpu`, `--video`.
   On a newer Nura release, see [Newer Nura versions](#newer-nura-versions---newversion).
 - **Understand how it works:** read the sections for each part:
   [SIM card and modem](#sim-card-and-modem), [Camera](#camera),
-  [Front camera](#front-camera-s5k5e8), [Rear LED torch](#rear-led-torch),
+  [Front camera](#front-camera-s5k5e8), [Rear LED torch](#rear-led-torch), [Loudspeaker](#loudspeaker),
   [Hardware notes](#hardware-notes-from-the-downstream-device-tree-and-the-vendor-camera-libraries),
-  and [`audio/`](audio/README.md) for the loudspeaker.
+  and [`audio/`](audio/README.md) for the whole loudspeaker investigation.
 - **Bring another device further:** most of this applies beyond the Mi Max 2:
   - the camera-subsystem clock fix and the binned sensor modes affect every MSM8953 phone;
   - the way the sensor drivers were built (register tables from the phone's own
@@ -132,15 +136,18 @@ repository.
 2. On the phone:
    ```sh
    cd mi-max2-oxygen-msm8953-nura-drivers
-   sudo sh install.sh            # everything: cameras + rear LED torch + SIM
+   sudo sh install.sh            # everything: cameras + rear LED torch + loudspeaker/earpiece + SIM + GPU + video
    sudo reboot
    ```
    Or pick a part:
    ```sh
    sudo sh install.sh --camera   # both cameras only
-   sudo sh install.sh --led      # rear LED torch only
+   sudo sh install.sh --led      # LEDs only: rear torch + notification LED fix
+   sudo sh install.sh --speaker  # loudspeaker + earpiece only (needs hexagonrpcd + 2 files, see Loudspeaker)
    sudo sh install.sh --sim      # SIM fix only (no kernel files, works on any kernel version)
-   sudo sh install.sh --check    # only check phone, kernel and files (add --camera/--led/--sim to check those)
+   sudo sh install.sh --gpu      # GTK4 apps drawn on the GPU only (works on any version; log out and in after it)
+   sudo sh install.sh --video    # hardware video decoder only (needs Xiaomi's venus.* firmware, see video/README.md)
+   sudo sh install.sh --check    # only check phone, kernel and files (add --camera/--led/--speaker/--sim/--gpu/--video to check those)
    sudo sh install.sh --ignore   # install even though the kernel/libcamera package revision differs (see below)
    ```
    Parts can be added later (for example `--led` after `--camera`). The
@@ -150,7 +157,7 @@ repository.
    sweeps once (the preview goes blurry, then sharp).
 
 `install.sh` checks that it runs on an `oxygen` with the kernel and libcamera
-versions the files were made for (camera and LED only), verifies every file
+versions the files were made for (camera, LED and speaker), verifies every file
 against `SHA256SUMS`, and backs up every original file it replaces to
 `/var/lib/mi-max-2-mainline/backup` (once; later runs never overwrite the
 originals). It installs:
@@ -159,13 +166,20 @@ originals). It installs:
 |---|---|---|
 | camera | `imx386.ko`, `s5k5e8.ko`, `dw9768.ko` (DW9763), fixed `qcom-camss.ko` | `/lib/modules/7.0.9-msm8953/updates/` |
 | camera | patched libcamera (`libcamera.so`, `libcamera-base.so`, simple IPA + signature, IPA proxy, `cam`), `imx386.yaml` and `s5k5e8.yaml` | `/usr/lib`, `/usr/libexec/libcamera`, `/usr/bin`, `/usr/share/libcamera/ipa/simple/` |
-| LED | `leds-qcom-pmi8950-torch.ko` | `/lib/modules/7.0.9-msm8953/updates/` |
+| LED | `leds-qcom-pmi8950-torch.ko`, the fixed `leds-aw2013.ko` (notification LED) | `/lib/modules/7.0.9-msm8953/updates/` |
 | LED | udev rule (no notification blinking on the flash) | `/etc/udev/rules.d/73-oxygen-flash-not-notification.rules` |
-| camera, LED | DTB: `camera`, `led` or `camera-led` variant | `/boot/msm8953-xiaomi-oxygen.dtb` and `/boot/dtbs/qcom/msm8953-xiaomi-oxygen.dtb` |
+| speaker | `tas2560.ko` (amplifier), `fastrpc.ko` (FastRPC to the ADSP, not enabled in the Nura kernel) | `/lib/modules/7.0.9-msm8953/updates/` |
+| speaker | udev rule: starts `hexagonrpcd-adsp-rootpd` as soon as the ADSP's FastRPC device appears | `/etc/udev/rules.d/74-oxygen-hexagonrpcd-adsp.rules` |
+| speaker | UCM with **Speaker** (both amps) and **Earpiece** devices, call audio routing (`speaker/ucm/`) | `/usr/share/alsa/ucm2/Xiaomi/oxygen/HiFi.conf`, `/usr/share/alsa/ucm2/conf.d/xiaomi-oxygen/xiaomi-oxygen.conf` |
+| camera, LED, speaker | DTB: the variant with every installed part (`camera`, `led`, `speaker`, `camera-led`, ... `camera-led-speaker`) | `/boot/msm8953-xiaomi-oxygen.dtb` and `/boot/dtbs/qcom/msm8953-xiaomi-oxygen.dtb` |
 | SIM | `modem/sim-wait.conf` (systemd drop-in, `SIM_WAIT_TIME=30`) | `/etc/systemd/system/msm-modem-uim-selection.service.d/sim-wait.conf` |
+| GPU | `gpu/zz-oxygen-gtk-gpu-renderer.sh` (`GSK_RENDERER=ngl`, overrides Nura's cairo) | `/etc/profile.d/zz-oxygen-gtk-gpu-renderer.sh` |
+| GPU | touch boost: `gpu/oxygen-touchboost.py` + `.service` (CPU/GPU minimum clocks up while touching, like Android) | `/usr/libexec/oxygen-touchboost`, `/etc/systemd/system/oxygen-touchboost.service` |
+| video | `venus-core.ko`, `venus-dec.ko` (fixed Venus decoder) | `/lib/modules/7.0.9-msm8953/updates/` |
+| video | `video/oxygen-venus.conf` (`blacklist venus_enc`: the hardware encoder still hangs) | `/etc/modprobe.d/oxygen-venus.conf` |
 
 **Undo:** `sudo sh revert.sh` (everything), `sudo sh revert.sh --camera`,
-`--led` or `--sim`, then reboot. Removing one part keeps the others (and switches
+`--led`, `--speaker`, `--sim`, `--gpu` or `--video`, then reboot (for `--gpu` alone, logging out and in is enough). Removing one part keeps the others (and switches
 to the DTB for what is left); removing everything restores the original DTB and
 libcamera.
 
@@ -394,6 +408,15 @@ His driver is not stored here: `fetch-upstream.sh` downloads his patch (pinned, 
 and extracts `kernel/torch/leds-qcom-pmi8950-torch.c` from it with our label patch applied
 (build it with `kernel/torch/Makefile` like the other modules).
 
+**Notification LED** (`white:indicator`, AW2013 at I²C `0x45`): it worked with the stock
+driver, but the kernel log filled with `Setting an LED's brightness failed (-6)` every
+~2.4 s. feedbackd drives it with the `pattern` trigger, which holds brightness 0 for part
+of each cycle; the driver had already powered the chip off and still wrote to it, and the
+unpowered chip does not answer on I²C (found with an i2c/regulator trace).
+`kernel/patches/0003-leds-aw2013-no-writes-while-powered-off.patch` returns early in that
+case; `--led` installs the fixed `leds-aw2013.ko`. Tested: no errors with the pattern
+trigger, the LED still fades up and down.
+
 ## Detailed status
 
 | Part | State |
@@ -404,14 +427,17 @@ and extracts `kernel/torch/leds-qcom-pmi8950-torch.c` from it with our label pat
 | Autofocus (DW9763 + libcamera) | ✅ one scan when the camera opens (~3–4 s), then it holds |
 | Auto-exposure | ✅ recovers from a dark start in ~1.2 s (stock 10% steps: ~8 s, estimated) |
 | Binned modes (CAMSS fix) | ✅ 1080p uses the full-field 2016x1508 mode |
-| Preview frame rate | 🟡 ~20 fps in Snapshot / ~28 fps in `cam` at 1080p, limited by libcamera's software ISP (~35 ms/frame) |
-| Continuous AF / tap-to-focus | ❌ not implemented |
-| Lens shading correction | ❌ not supported by libcamera's simple pipeline yet (corners are darker) |
+| Preview frame rate | 🟡 libcamera delivers 1080p at 30 fps, 39 ms from sensor to app (GPU software ISP). Snapshot shows fewer frames (~15–23 fps): GTK drew them on the CPU until `--gpu`, and PipeWire hands Snapshot some frames it still holds (`buffer was not recycled`, dropped; not solved yet) |
+| Video recording | 🟡 Snapshot encodes with openh264 on the CPU: ~7 fps at 1080p, ~16 fps at 720p (x264 `superfast` would reach 30 fps at 720p, but Snapshot does not use it). The Venus hardware encoder hangs the video core mid-frame (see [`video/`](video/README.md)) |
+| Hardware video decoding (`--video`) | ✅ Venus: 720p H.264 at ~76 fps, 1080p fine; used automatically by GStreamer players |
 | Front camera (Samsung S5K5E8) | ✅ new `s5k5e8` driver: 2592x1944 @ 29.8 fps; no colour matrix yet (see "Front camera") |
-| Loudspeaker / earpiece (2x TI TAS2560 on Quinary MI2S) | ❌ not working: the ADSP hangs when the Quinary port starts. All research so far is in [`audio/`](audio/README.md), for anyone who wants to continue |
+| Loudspeaker (TI TAS2560 on Quinary MI2S, `--speaker`) | ✅ works, together with the earpiece for media; needs hexagonrpcd from boot (see "Loudspeaker") |
+| Earpiece (second TAS2560, `--speaker`) | ✅ plays (UCM **Earpiece**) |
 | Rear LED as torch (flashlight) | ✅ works (4 levels, cool/warm) with the driver from the Vince project (`--led`) |
-| Photo flash (high current, fired with the shot) | ❌ not done |
+| Notification LED (AW2013) | ✅ works; `--led` fixes the driver's error spam with feedbackd's pattern trigger |
+| USB-C OTG (host mode) | ✅ works with the stock Nura kernel, nothing to install: tested a USB-C hub with a card reader, a 256 GB USB stick and a mouse (the phone powers them); unplugging switches back to charging/USB networking. Once, the first unplug of a boot stalled USB for ~14 s (not seen again) |
 | SIM card (`--sim`) | ✅ detected by ModemManager, see "SIM card and modem" |
+| GPU (Adreno 506, freedreno) | ✅ accelerated (Phosh/phoc on GLES, GTK4 apps with `--gpu`); no Vulkan (Mesa's turnip needs Adreno 6xx) |
 | Calls / SMS / mobile data | ✅ tested |
 
 ## Tuning autofocus
@@ -453,12 +479,109 @@ fix: with a 172 MHz link, CAMSS chose the 100 MHz CSIPHY timer rate, which never
 starts on MSM8953 ("csi0phytimer_clk status stuck at 'off'"). MSM8953 now gets its
 own CSIPHY table without that rate; downstream always uses 200 MHz.
 
+## Loudspeaker
+
+The bottom loudspeaker is a **TI TAS2560** amplifier on the **Quinary MI2S** interface,
+which shares the `pri_mi2s` pins. It is driven through the ADSP (`q6afe`), like on Android.
+`install.sh --speaker` makes it work: our `tas2560` driver (`kernel/tas2560/`), the
+device-tree part `kernel/dts/msm8953-xiaomi-oxygen-speaker.dtsi` (amplifier, Quinary
+RX + I/V-sense TX links, FastRPC node), `fastrpc.ko`, a udev rule and a UCM **Speaker**
+device (its own stream MultiMedia3, `hw:0,2`, shown as its own output in the sound
+settings; 14 dB amplifier gain as on Android). It cannot share MultiMedia1 with the
+earpiece and headphones: mainline `q6routing` keeps only one output port per stream.
+
+**Why it did not work before (the real fix):** Xiaomi's ADSP firmware forces TI's
+*SmartAmp* speaker protection on whenever the Quinary port starts, and SmartAmp then reads
+its tuning file `tas2560_ssi.bin` / `tas2560_aac.bin` from Linux over **FastRPC**. On
+Android, `adsprpcd` serves those requests from boot. On Nura nothing did, so the ADSP
+waited forever inside that file read and every speaker start failed with
+`AFE enable for port 0x1016 failed -110`. Starting the server later is not enough: it has
+to run from the moment the ADSP boots, which is what the udev rule does. Found with live
+ADSP debug logs (`audio/` describes the tools and the long way there).
+
+**Needed on the phone first:**
+- `sudo apk add hexagonrpcd hexagonrpcd-systemd hexagonrpcd-udev`
+- Xiaomi's two tuning files in `/usr/share/qcom/msm8953/Xiaomi/oxygen/dsp/adsp/`:
+  `tas2560_aac.bin` and `tas2560_ssi.bin`. They are Xiaomi's files, so they are not in
+  this repository: copy them from the phone's Android **vendor** partition
+  (`vendor/lib/rfsa/adsp/`) or from a MIUI firmware image for `oxygen`.
+  `install.sh --speaker` refuses to install without them.
+
+**Status:** plays through the bottom speaker (tested with `aplay` and the ADSP's own log:
+SmartAmp loads its tuning, the port starts and stops cleanly).
+
+**No hiss after playback:** the amplifier only finishes its software shutdown while the
+I2S clocks still run. The ADSP stops the clocks before the normal (DAPM) power down, which
+left the DAC, Class-D and boost powered with `PWR_ERR` set: the speaker hissed after every
+sound, sometimes without end. The driver therefore powers the amplifier down on stream
+mute (before the clocks stop), waits for `STATUS_POWER` to show it off, and clears the
+fault flags before every power up. It also turns off the amplifier's idle-channel
+detection, which TI requires while clock-error detection is on (datasheet 9.3.9); left on,
+the amp hissed after about 2 s of digital silence during playback.
+
+## Earpiece
+
+The earpiece is the second **TAS2560** ("RCV"), at I2C `0x4f` on the same bus (reset
+gpio127, IRQ gpio63, 8 Ω), on the same Quinary MI2S link and the same data line as the
+loudspeaker amp. The PM8953 codec's own EAR output is not connected: a tone through it is
+silent, and Xiaomi's Android never uses it either (its `handset` path is `RCV` only). The
+earpiece amp takes the **left** I2S slot on **SD2** and the loudspeaker amp the right one,
+as in Xiaomi's driver (checked by ear with a left/right test signal).
+
+Both amps sit on one DAI link (`kernel/dts/msm8953-xiaomi-oxygen-speaker.dtsi`). The
+driver gives each one an **Amp Switch** (which amps play, effective at once, also during a
+call), an **ASI Channel** (Left, Right, Left+Right) and an **Amp High-pass** (Off, 500 Hz,
+1 kHz, 2 kHz; the amp's first-order playback filter, B0 P50 R28-R39). The UCM uses them:
+
+| UCM device | Amps | Use |
+|---|---|---|
+| **Speaker** | loudspeaker 14 dB + earpiece 9 dB with a 1 kHz high-pass, both mono (L+R) | media, ringtone, speakerphone |
+| **Earpiece** | earpiece only, 14 dB, full range | calls at the ear |
+
+Both use the stream MultiMedia3 (`hw:0,2`). While one of them is selected, calls
+(q6voice, `VoiceMMode1`) go to Quinary; otherwise to the codec (headphones). Switching
+between Speaker and Earpiece during a call works (only the amps change); switching
+between the codec and Quinary takes effect on the next call, because q6voice picks its
+output port when the call starts.
+
+**Why both amps for media, and the high-pass:** Android plays the two as stereo and lets
+TI's SmartAmp in the ADSP protect them. Its tuning (`tas2560_ssi.bin`, 8 profiles x
+2 channels) splits each channel into three bands at about 900 Hz and 4 kHz
+(Linkwitz-Riley pairs) and limits each band. SmartAmp only processes while the I/V
+feedback runs, which mainline does not do, so here the earpiece gets a fixed 1 kHz
+high-pass instead: it adds mids and highs and keeps the bass on the bigger speaker. True
+stereo is a mixer setting away (`Earpiece ASI Channel` Left, `Speaker ASI Channel` Right).
+Found with REA/Ghidra on the ADSP firmware (`audio/adsp-re/ghidra/`).
+
+## GPU renderer for GTK4 apps
+
+The GPU (Adreno 506) works on Nura: Phosh and the compositor draw with OpenGL ES. GTK4 apps,
+though, are forced onto GTK's **cairo** software renderer by Nura's `soc-qcom-msm8953-gpu`
+package (`/etc/profile.d/adreno-a506-quirks.sh`), a workaround from the time GTK's ngl
+renderer was very slow on this GPU. With today's GTK 4.22 and Mesa 26.1 that is no longer true:
+the Snapshot camera preview took ~1.5 CPU cores with cairo and ~0.25 with ngl, and was visibly
+smoother. Settings, Files, Console and Calculator were smoother or the same, with no glitches.
+
+`install.sh --gpu` adds `/etc/profile.d/zz-oxygen-gtk-gpu-renderer.sh` with
+`GSK_RENDERER=ngl`, which loads after Nura's file and overrides it. Log out and in (or reboot)
+afterwards. It also installs a **touch boost** service: like Android, it raises the minimum CPU
+(1.42 GHz) and GPU (400 MHz) clocks while you touch the screen, so scrolling does not start at
+idle clocks. A comparison with Android's drivers found no other difference worth changing: see
+[`gpu/README.md`](gpu/README.md). How to try it first without installing: [`gpu/README.md`](gpu/README.md).
+
 ## Troubleshooting
 
 - `cam -l` should list `imx386`. If not: `dmesg | grep -iE 'imx386|camss|dw976'`.
 - `modinfo -n qcom_camss` must point to `/lib/modules/$(uname -r)/updates/`.
 - Camera missing in Snapshot after changing files: `systemctl --user restart pipewire wireplumber`.
 - Dark photos in a dim room: exposure is capped at 33 ms (30 fps) with up to 16x gain.
+- No sound from the speaker: `systemctl status hexagonrpcd-adsp-rootpd` must be active
+  since boot, and `dmesg | grep -i 'afe\|-110'` must show no `-110`. Choose the
+  **Speaker** output in the sound settings.
+- Check the amps: `amixer -c0 contents | grep -A2 -E 'Speaker Amp|Earpiece Amp'`;
+  `dmesg | grep tas2560` must list both `0-004c` and `0-004f`.
+- Slow or choppy apps / camera preview: `systemctl --user show-environment | grep GSK_RENDERER`
+  must say `ngl` (after `--gpu` and a new login). `cairo` is Nura's software default.
 
 ## What is inside
 
@@ -466,10 +589,13 @@ own CSIPHY table without that rate; downstream always uses 200 MHz.
 |---|---|
 | `install.sh`, `revert.sh` | Install or remove the parts (see Install) |
 | [`prebuilt/`](prebuilt/README.md) | Ready-made files for Nura v26.06 (aarch64) |
-| [`kernel/`](kernel/README.md) | Camera sensor drivers, torch label patch, device trees, module build script |
+| [`kernel/`](kernel/README.md) | Camera sensor drivers, TAS2560 amplifier driver, torch label patch, device trees, module build script |
+| `speaker/` | Loudspeaker and earpiece runtime files: UCM with the Speaker and Earpiece devices, hexagonrpcd udev rule |
+| [`gpu/`](gpu/README.md) | GTK4 GPU renderer setting (`--gpu`) and why |
+| [`video/`](video/README.md) | Hardware video decoder (`--video`): what was wrong, firmware, why the encoder stays off |
 | [`libcamera/`](libcamera/README.md) | Our libcamera patches (0010–0014), tuning files, build scripts |
 | [`modem/`](modem/README.md) | SIM fix (systemd drop-in) |
-| [`audio/`](audio/README.md) | Loudspeaker research (not working yet) |
+| [`audio/`](audio/README.md) | How the loudspeaker and earpiece were made to work: ADSP diagnostics (`adspdiag`), firmware reverse engineering (Ghidra in Docker), test drivers, captured logs and evidence |
 | `fetch-upstream.sh` | Downloads the third-party files, for rebuilding only (see "Third-party files") |
 | `SHA256SUMS` | Checksums of every file, checked by `install.sh` |
 | `LICENSE`, `LICENSES/` | GPL-2.0; LGPL-2.1 and BSD-3-Clause for the files that use them |
@@ -486,7 +612,7 @@ source, applies the patches, full build ~15 min):
 cd kernel
 docker run --rm -v "$PWD:/w" alpine:3.24 sh /w/build-modules.sh    # -> kernel/out/7.0.9-msm8953/
 ```
-The three DTBs come out byte-identical to `prebuilt/kernel/`. Modules embed build paths,
+The seven DTBs come out byte-identical to `prebuilt/kernel/`. Modules embed build paths,
 so their checksums differ from the prebuilt ones even though the source is the same.
 
 **libcamera** (v0.7.1 + the 14 patches, cross-compiled for aarch64 with GPU

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Xiaomi Mi Max 2 (oxygen): raise the minimum CPU/GPU clocks while the touchscreen is
+# used, like Android's input boost. Installed by install.sh --gpu, see gpu/README.md.
+[Unit]
+Description=Touch boost for CPU and GPU clocks (Mi Max 2)
+After=systemd-udev-settle.service
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/libexec/oxygen-touchboost
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
